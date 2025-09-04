@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem, Avatar } from '@mui/material';
-import { BugReport, AccountCircle } from '@mui/icons-material';
+import { AccountCircle } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 
@@ -28,8 +28,8 @@ function NavBar() {
   };
 
   return (
-    <AppBar position="static">
-      <Toolbar>
+    <AppBar position="static" elevation={0}>
+      <Toolbar sx={{ minHeight: 72 }}>
         <IconButton
           size="large"
           edge="start"
@@ -39,7 +39,7 @@ function NavBar() {
           component={Link}
           to="/"
         >
-          <BugReport />
+          <img src="https://www.rebisco.com.ph/img/cll-vanillacloud-logo-1614649609.jpg" alt="Logo" style={{ height: 28 }} />
         </IconButton>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Bug Tracker

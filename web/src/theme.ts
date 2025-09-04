@@ -3,13 +3,13 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#3f51b5', // A nice shade of indigo
+      main: '#EB2A2E',
     },
     secondary: {
-      main: '#ff4081', // A vibrant pink
+      main: '#ff4081',
     },
     background: {
-      default: '#f5f5f5', // Light grey for a clean look
+      default: '#f5f5f5',
       paper: '#ffffff',
     },
   },
@@ -26,14 +26,22 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#3f51b5', // Use primary color for app bar
+          backgroundColor: '#EB2A2E',
+          boxShadow: 'none',
+        },
+      },
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          minHeight: 72,
         },
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none', // Keep button text as is
+          textTransform: 'none',
         },
       },
     },
