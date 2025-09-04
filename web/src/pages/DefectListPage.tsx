@@ -38,7 +38,7 @@ function DefectListPage() {
   return (
     <Container maxWidth="xl" sx={{ mt: 3 }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h4">Defects</Typography>
+        <Typography variant="h4"></Typography>
         <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/defects/new')}>New Defect</Button>
       </Box>
       <TableContainer component={Paper}>

@@ -29,9 +29,9 @@ function EditDefectPage() {
           activities: data.activities || '',
           responsible: data.responsible || '',
           priority: data.priority || 'Low',
-          dueDate: data.dueDate ? new Date(data.dueDate).toISOString().slice(0,10) : '',
+          dueDate: data.dueDate ? new Date(data.dueDate).toISOString().slice(0, 10) : '',
           status: data.status || 'Open',
-          nextCheck: data.nextCheck ? new Date(data.nextCheck).toISOString().slice(0,10) : '',
+          nextCheck: data.nextCheck ? new Date(data.nextCheck).toISOString().slice(0, 10) : '',
           remark: data.remark || '',
         });
       } finally {
@@ -64,13 +64,13 @@ function EditDefectPage() {
   return (
     <Container maxWidth="md" sx={{ mt: 3 }}>
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>Edit Defect</Typography>
+        <Typography variant="h6" gutterBottom>Edit Defect</Typography>
         <Box component="form" onSubmit={submit}>
           <Grid container spacing={2}>
-            <Grid size={12} sm={6}>
+            <Grid size={12}>
               <TextField fullWidth required label="Raised by team" name="raisedByTeam" value={form.raisedByTeam} onChange={handleChange} />
             </Grid>
-            <Grid size={12} sm={6}>
+            <Grid size={12}>
               <TextField fullWidth required label="Responsible" name="responsible" value={form.responsible} onChange={handleChange} />
             </Grid>
             <Grid size={12}>
@@ -79,20 +79,20 @@ function EditDefectPage() {
             <Grid size={12}>
               <TextField fullWidth label="Activities" name="activities" multiline minRows={2} value={form.activities} onChange={handleChange} />
             </Grid>
-            <Grid size={12} sm={6}>
+            <Grid size={12}>
               <TextField select fullWidth label="Priority" name="priority" value={form.priority} onChange={handleChange}>
                 {priorities.map(p => (<MenuItem key={p} value={p}>{p}</MenuItem>))}
               </TextField>
             </Grid>
-            <Grid size={12} sm={6}>
+            <Grid size={12}>
               <TextField select fullWidth label="Status" name="status" value={form.status} onChange={handleChange}>
                 {statuses.map(s => (<MenuItem key={s} value={s}>{s}</MenuItem>))}
               </TextField>
             </Grid>
-            <Grid size={12} sm={6}>
+            <Grid size={12}>
               <TextField fullWidth type="date" label="Due Date" name="dueDate" value={form.dueDate} onChange={handleChange} InputLabelProps={{ shrink: true }} />
             </Grid>
-            <Grid size={12} sm={6}>
+            <Grid size={12}>
               <TextField fullWidth type="date" label="Next Check" name="nextCheck" value={form.nextCheck} onChange={handleChange} InputLabelProps={{ shrink: true }} />
             </Grid>
             <Grid size={12}>

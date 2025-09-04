@@ -45,8 +45,8 @@ function CreateDefectPage() {
   return (
     <Container maxWidth="sm" sx={{ mt: 4 }}>
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Create New Defect
+        <Typography variant="h6" gutterBottom>
+          New Defect
         </Typography>
         <Box component="form" onSubmit={submit}>
           <Grid container spacing={2}>
