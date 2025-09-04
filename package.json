@@ -1,0 +1,22 @@
+{
+  "name": "rebisco-bugtracker-monorepo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "api",
+    "web"
+  ],
+  "scripts": {
+    "install:api": "cd api && yarn install",
+    "install:web": "cd web && yarn install",
+    "install:all": "yarn install",
+    "dev:api": "cd api && yarn dev",
+    "dev:web": "cd web && yarn dev",
+    "dev:all": "concurrently \"yarn dev:api\" \"yarn dev:web\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
