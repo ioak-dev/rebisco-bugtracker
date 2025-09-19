@@ -7,7 +7,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 function NavBar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const { logout, user } = useAuth0();
+  const { logout, user, isAuthenticated, loginWithRedirect } = useAuth0();
   const [changePwdOpen, setChangePwdOpen] = React.useState(false);
   const [email, setEmail] = React.useState<string>(user?.email || '');
   const [submitting, setSubmitting] = React.useState(false);
@@ -85,47 +85,59 @@ function NavBar() {
         <Typography variant="body2" component="div" sx={{ flexGrow: 1 }}>
           Bug Tracker
         </Typography>
-        {/* <Button color="inherit" component={Link} to="/defects">
-          Defects
-        </Button>
-        <Button color="inherit" component={Link} to="/users">
-          Users
-        </Button> */}
+        {/* {isAuthenticated && (
+          <>
+            <Button color="inherit" component={Link} to="/defects">
+              Defects
+            </Button>
+            <Button color="inherit" component={Link} to="/users">
+              Users
+            </Button>
+          </>
+        )} */}
         <div>
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleMenu}
-            color="inherit"
-          >
-            {user?.picture ? (
-              <Avatar alt={user.name} src={user.picture} sx={{ color: "#000", bgcolor: '#fff', width: 32, height: 32 }} />
-            ) : (
-              <Avatar sx={{ bgcolor: '#fff', width: 32, height: 32 }}>
-                <AccountCircle sx={{ color: '#000' }} />
-              </Avatar>
-            )}
-          </IconButton>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={open}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
-            <MenuItem onClick={handleChangePassword}>Change Password</MenuItem>
-          </Menu>
+          {isAuthenticated ? (
+            <>
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                {user?.picture ? (
+                  <Avatar alt={user.name} src={user.picture} sx={{ color: "#000", bgcolor: '#fff', width: 32, height: 32 }} />
+                ) : (
+                  <Avatar sx={{ bgcolor: '#fff', width: 32, height: 32 }}>
+                    <AccountCircle sx={{ color: '#000' }} />
+                  </Avatar>
+                )}
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={open}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+                <MenuItem onClick={handleChangePassword}>Change Password</MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <Button color="inherit" onClick={() => loginWithRedirect()}>
+              Login
+            </Button>
+          )}
         </div>
       </Toolbar>
       <Dialog open={changePwdOpen} onClose={() => setChangePwdOpen(false)} fullWidth maxWidth="xs">

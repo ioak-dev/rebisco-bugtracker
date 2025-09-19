@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mongodb-rebisco:
     image: mongo:latest
@@ -9,40 +7,43 @@ services:
     volumes:
       - mongo-rebisco-data:/data/db
 
-  # api:
-  #   build:
-  #     context: ./api
-  #     dockerfile: Dockerfile
-  #   container_name: api
-  #   ports:
-  #     - "4000:4000"
-  #   environment:
-  #     NODE_ENV: production
-  #     MONGO_URI: mongodb://mongodb-rebisco:27017/bugtracker
-  #     AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
-  #     AUTH0_ISSUER_BASE_URL: ${AUTH0_ISSUER_BASE_URL}
-  #   env_file:
-  #     - ./api/env.api.prod.example
-  #   depends_on:
-  #     - mongodb-rebisco
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: api
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: production
+      MONGO_URI: mongodb://mongodb-rebisco:27017/bugtracker
+      AUTH0_DOMAIN: skateru.eu.auth0.com
+      AUTH0_CLIENT_ID: TotKzFNjlQSTbTvYRtMHItWj4PoUILgT
+      AUTH0_AUDIENCE: https://bugtracker.ioak.io
+      AUTH0_ISSUER_BASE_URL: https://skateru.eu.auth0.com/
+    # env_file:
+    #   - ./api/env.api.prod.example
+    depends_on:
+      - mongodb-rebisco
 
-  # web:
-  #   build:
-  #     context: ./web
-  #     dockerfile: Dockerfile
-  #   container_name: web
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     NODE_ENV: production
-  #     VITE_API_URL: http://localhost:4000/api
-  #     VITE_AUTH0_DOMAIN: ${AUTH0_DOMAIN}
-  #     VITE_AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
-  #     VITE_AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
-  #   env_file:
-  #     - ./web/env.web.prod.example
-  #   depends_on:
-  #     - api
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:4000/api
+        VITE_AUTH0_DOMAIN: skateru.eu.auth0.com
+        VITE_AUTH0_CLIENT_ID: TotKzFNjlQSTbTvYRtMHItWj4PoUILgT
+        VITE_AUTH0_AUDIENCE: https://bugtracker.ioak.io
+    container_name: web
+    ports:
+      - "5173:5173"
+    environment:
+      NODE_ENV: production
+    # env_file:
+    #   - ./web/env.web.prod.example
+    depends_on:
+      - api
 
 volumes:
   mongo-rebisco-data:

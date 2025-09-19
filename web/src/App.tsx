@@ -25,7 +25,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {isAuthenticated && <NavBar />}
+      <NavBar />
       <main className="container mx-auto">
         <Routes>
           <Route path="/login" element={<LoginPage />} />

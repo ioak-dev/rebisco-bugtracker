@@ -1,15 +1,18 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
-WORKDIR /app/api
+WORKDIR /app
 
-COPY package.json yarn.lock ./api/
+# Copy package files
+COPY package.json ./
+
+# Copy yarn.lock if it exists, otherwise skip
+COPY yarn.lock* ./
 
 # Install dependencies
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
+# Copy source code
 COPY . .
-
-RUN yarn build
 
 # Expose port and start the application
 EXPOSE 4000

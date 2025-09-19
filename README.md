@@ -48,3 +48,5 @@ This monorepo contains a fullstack web application for tracking defects. It incl
 -   `api/`: Express.js backend for handling defect management and user authentication.
 -   `web/`: React frontend application built with Vite, TailwindCSS, and Material UI.
 -   `docker-compose.yml`: Defines the Docker services for the application.
+
+yolanon738@dotxan.com

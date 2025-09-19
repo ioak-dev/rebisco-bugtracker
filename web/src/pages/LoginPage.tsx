@@ -22,10 +22,9 @@ function LoginPage() {
   }
 
   return (
-    <Container maxWidth="sm" className="mt-8 text-center">
+    <Container maxWidth="sm" className="mt-8">
       <Box className="p-8 shadow-md rounded-lg bg-white">
-        <Typography variant="h4" component="h1" className="mb-4">Welcome to Bug Tracker</Typography>
-        <Typography variant="body1" className="mb-6">Please log in to continue.</Typography>
+        <Typography variant="body1" className="mb-6">You are not logged in</Typography>
         <Button variant="contained" color="primary" onClick={() => loginWithRedirect()}>Login</Button>
       </Box>
     </Container>
