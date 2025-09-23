@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { authorized, defectsApi } from '../api/client';
+import { authorized, defectsApi, mailApi } from '../api/client';
 import { useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import { Box, Button, Container, MenuItem, Paper, TextField, Typography } from '@mui/material';
@@ -12,6 +12,7 @@ const statuses = ['Open', 'In Progress', 'Blocked', 'Closed', 'Reopened'];
 
 function CreateDefectPage() {
   const auth0 = useAuth0();
+  const { user } = useAuth0();
   const navigate = useNavigate();
   const [form, setForm] = React.useState({
     raisedByTeam: '',
@@ -39,6 +40,14 @@ function CreateDefectPage() {
     };
 
     await authorized(auth0, () => defectsApi.create(payload));
+    console.log(user);
+    if (!user) return;
+    const _mailPayload = {
+      to: user.email,
+      subject: `New Defect Assigned: ${form.description.substring(0, 20)}...`,
+      text: `A new defect has been assigned to you by ${form.raisedByTeam}.\n\nDescription: ${form.description}\n\nPlease check the defect tracking system for more details.`,
+    };
+    await authorized(auth0, () => mailApi.send(_mailPayload));
     navigate('/defects');
   };
 
