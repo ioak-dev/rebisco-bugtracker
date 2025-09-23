@@ -18,3 +18,7 @@ export const defectsApi = {
   update: (id: string, payload: any) => api.patch(`/defects/${id}`, payload).then(r => r.data),
   remove: (id: string) => api.delete(`/defects/${id}`).then(r => r.data),
 };
+
+export const mailApi = {
+  send: (payload: any) => api.post('/text-mail', payload).then(r => r.data),
+};

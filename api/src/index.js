@@ -80,14 +80,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-app.post("/text-mail", (req, res) => {
+app.post("/api/text-mail", (req, res) => {
   const { to, subject, text } = req.body;
   const mailData = {
     from: "support@ioak.org",
     to: to,
     subject: subject,
-    text: text,
-    html: "<b>Hey there! </b><br> This is our first message sent with Nodemailer<br/>",
+    html: text,
   };
 
   transporter.sendMail(mailData, (error, info) => {
