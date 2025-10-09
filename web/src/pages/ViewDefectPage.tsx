@@ -2,10 +2,7 @@ import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { authorized, defectsApi } from '../api/client';
 import { useNavigate, useParams } from 'react-router-dom';
-import {Box, Button, Container, Paper, Typography, Grid} from '@mui/material';
-
-const priorities = ['Low', 'Medium', 'High', 'Critical'];
-const statuses = ['Open', 'In Progress', 'Blocked', 'Closed', 'Reopened'];
+import { Box, Button, Container, Paper, Typography, Grid } from '@mui/material';
 
 function ViewDefectPage() {
   const auth0 = useAuth0();
@@ -88,7 +85,7 @@ function ViewDefectPage() {
               <Typography variant="subtitle1" fontWeight={400}>{form.remark}</Typography>
             </Grid>
             <Grid item sm={12}>
-              <Box display="flex" gap={2}  mt={2}>
+              <Box display="flex" gap={2} mt={2}>
                 <Button variant="contained" onClick={() => navigate('/defects')}>
                   Back
                 </Button>
