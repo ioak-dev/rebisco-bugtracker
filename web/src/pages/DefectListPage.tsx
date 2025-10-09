@@ -7,6 +7,7 @@ import {
   Typography
 } from '@mui/material';
 import { Delete, Edit, Add } from '@mui/icons-material';
+import VisibilitySharpIcon from '@mui/icons-material/VisibilitySharp';
 import { useNavigate } from 'react-router-dom';
 
 function DefectListPage() {
@@ -70,6 +71,9 @@ function DefectListPage() {
                 <TableCell>{row.nextCheck ? new Date(row.nextCheck).toLocaleDateString() : ''}</TableCell>
                 <TableCell>{row.remark}</TableCell>
                 <TableCell align="right">
+                  <IconButton color="info" onClick={() => navigate(`/defects/view/${row._id}`)}>
+                    <VisibilitySharpIcon />
+                  </IconButton>
                   <IconButton color="primary" onClick={() => navigate(`/defects/edit/${row._id}`)}>
                     <Edit />
                   </IconButton>
