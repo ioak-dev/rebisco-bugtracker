@@ -44,9 +44,9 @@ function ViewDefectPage() {
 
   return (
     <Container maxWidth="md" sx={{ mt: 3 }}>
-      <Paper sx={{ p: 3, width: '100%' }}>
-        <Typography variant="h5" gutterBottom>View Defect</Typography>
-        <Box display="flex" flexDirection="column" gap={2}>
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h6" gutterBottom>View Defect</Typography>
+        <Box display="flex" flexDirection="column">
           <Grid container spacing={2} direction="column">
             <Grid item sm={12}>
               <Typography variant="h6" fontWeight={500}>Raised By Team :</Typography>
