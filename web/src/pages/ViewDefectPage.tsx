@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { authorized, defectsApi } from '../api/client';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, Container, Paper, Typography, Grid } from '@mui/material';
+import { Box, Button, Container, Paper, Typography, TableContainer, TableBody, TableCell, TableRow ,Table} from '@mui/material';
 
 function ViewDefectPage() {
   const auth0 = useAuth0();
@@ -45,54 +45,53 @@ function ViewDefectPage() {
   return (
     <Container maxWidth="md" sx={{ mt: 3 }}>
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>View Defect</Typography>
-        <Box display="flex" flexDirection="column">
-          <Grid container spacing={2} direction="column">
-            <Grid item sm={12}>
-              <Typography variant="h6" fontWeight={500}>Raised By Team :</Typography>
-              <Typography variant="subtitle1" fontWeight={400}>{form.raisedByTeam}</Typography>
-            </Grid>
-            <Grid item sm={12}>
-              <Typography variant="h6" fontWeight={500}>Responsible :</Typography>
-              <Typography variant="subtitle1" fontWeight={400}>{form.responsible}</Typography>
-            </Grid>
-            <Grid item sm={12}>
-              <Typography variant="h6" fontWeight={500}>Description :</Typography>
-              <Typography variant="subtitle1" fontWeight={400}>{form.description}</Typography>
-            </Grid>
-            <Grid item sm={12}>
-              <Typography variant="h6" fontWeight={500}>Activities :</Typography>
-              <Typography variant="subtitle1" fontWeight={400}>{form.activities}</Typography>
-            </Grid>
-            <Grid item sm={12}>
-              <Typography variant="h6" fontWeight={500}>Priority :</Typography>
-              <Typography variant="subtitle1" fontWeight={400}>{form.priority}</Typography>
-            </Grid>
-            <Grid item sm={12}>
-              <Typography variant="h6" fontWeight={500}>Status :</Typography>
-              <Typography variant="subtitle1" fontWeight={400}>{form.status}</Typography>
-            </Grid>
-            <Grid item sm={12}>
-              <Typography variant="h6" fontWeight={500}>Due Date :</Typography>
-              <Typography variant="subtitle1" fontWeight={400}>{form.dueDate}</Typography>
-            </Grid>
-            <Grid item sm={12}>
-              <Typography variant="h6" fontWeight={500}>Next Check :</Typography>
-              <Typography variant="subtitle1" fontWeight={400}>{form.nextCheck}</Typography>
-            </Grid>
-            <Grid item sm={12}>
-              <Typography variant="h6" fontWeight={500}>Remark :</Typography>
-              <Typography variant="subtitle1" fontWeight={400}>{form.remark}</Typography>
-            </Grid>
-            <Grid item sm={12}>
+        <Typography variant="h4" gutterBottom>Defect</Typography>
+        <TableContainer>
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell sx={{fontWeight:700}}>Raised By Team </TableCell>
+                <TableCell>{form.raisedByTeam}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{fontWeight:700}}>Responsible </TableCell>
+                <TableCell>{form.responsible}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{fontWeight:700}}>Description </TableCell>
+                <TableCell>{form.description}</TableCell>
+                </TableRow>
+              <TableRow>
+                <TableCell sx={{fontWeight:700}}>Activities </TableCell>
+                <TableCell>{form.activities}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{fontWeight:700}}>Priority </TableCell>
+                <TableCell>{form.priority}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{fontWeight:700}}>Status </TableCell>
+                <TableCell>{form.status}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{fontWeight:700}}>Due Date </TableCell>
+                <TableCell>{form.dueDate}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{fontWeight:700}}>Next Check </TableCell>
+                <TableCell>{form.nextCheck}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{fontWeight:700}}>Remark </TableCell>
+                <TableCell>{form.remark}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
               <Box display="flex" gap={2} mt={2}>
-                <Button variant="contained" onClick={() => navigate('/defects')}>
-                  Back
-                </Button>
+                <Button variant="contained" onClick={() => navigate(`/defects`)}>Back</Button>
+                <Button variant="contained" onClick={() => navigate(`/defects/edit/${id}`)}>Edit</Button>
               </Box>
-            </Grid>
-          </Grid>
-        </Box>
       </Paper>
     </Container>
   );
