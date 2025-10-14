@@ -55,6 +55,13 @@ function ViewDefectPage() {
     })();
   }, [id, auth0]);
 
+  const confirmDelete = async () => {
+    if (!id) return;
+    await authorized(auth0, () => defectsApi.remove(id));
+    setOpenDeleteDialog(false);
+    navigate(`/defects`);
+  };
+
   if (loading || !form) {
     return (
       <Container maxWidth="md" sx={{ mt: 3 }}>
@@ -113,7 +120,7 @@ function ViewDefectPage() {
         </TableContainer>
         <Box
           display="flex"
-          gap={2}   
+          gap={2}
           justifyContent="space-between"
           alignItems="center"
           mt={2}
@@ -154,15 +161,7 @@ function ViewDefectPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-            <Button
-              color="error"
-              onClick={async () => {
-                if (!id) return;
-                await authorized(auth0, () => defectsApi.remove(id));
-                setOpenDeleteDialog(false);
-                navigate(`/defects`);
-              }}
-            >
+            <Button color="error" onClick={confirmDelete}>
               Delete
             </Button>
           </DialogActions>

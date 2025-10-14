@@ -1,14 +1,27 @@
-import React from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
-import { defectsApi, authorized } from '../api/client';
+import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { defectsApi, authorized } from "../api/client";
 import {
-  Box, Button, Container, Dialog, DialogActions, DialogContent, DialogContentText,
-  DialogTitle, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Typography
-} from '@mui/material';
-import { Delete, Edit, Add } from '@mui/icons-material';
-import VisibilitySharpIcon from '@mui/icons-material/VisibilitySharp';
-import { useNavigate } from 'react-router-dom';
+  Box,
+  Button,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import { Delete, Edit, Add, VisibilitySharp } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 function DefectListPage() {
   const auth0 = useAuth0();
@@ -27,7 +40,9 @@ function DefectListPage() {
     }
   }, [auth0]);
 
-  React.useEffect(() => { load(); }, [load]);
+  React.useEffect(() => {
+    load();
+  }, [load]);
 
   const confirmDelete = async () => {
     if (!toDelete) return;
@@ -38,9 +53,20 @@ function DefectListPage() {
 
   return (
     <Container maxWidth="xl" sx={{ mt: 3 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
         <Typography variant="h4"></Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/defects/new')}>New Defect</Button>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={() => navigate("/defects/new")}
+        >
+          New Defect
+        </Button>
       </Box>
       <TableContainer component={Paper}>
         <Table size="small">
@@ -59,30 +85,48 @@ function DefectListPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {!loading && rows.map(row => (
-              <TableRow key={row._id} hover>
-                <TableCell>{row.raisedByTeam}</TableCell>
-                <TableCell>{row.description}</TableCell>
-                <TableCell>{row.activities}</TableCell>
-                <TableCell>{row.responsible}</TableCell>
-                <TableCell>{row.priority}</TableCell>
-                <TableCell>{row.dueDate ? new Date(row.dueDate).toLocaleDateString() : ''}</TableCell>
-                <TableCell>{row.status}</TableCell>
-                <TableCell>{row.nextCheck ? new Date(row.nextCheck).toLocaleDateString() : ''}</TableCell>
-                <TableCell>{row.remark}</TableCell>
-                <TableCell align="right">
-                  <IconButton color="info" onClick={() => navigate(`/defects/view/${row._id}`)}>
-                    <VisibilitySharpIcon />
-                  </IconButton>
-                  <IconButton color="info" onClick={() => navigate(`/defects/edit/${row._id}`)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton color="error" onClick={() => setToDelete(row._id)}>
-                    <Delete />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+            {!loading &&
+              rows.map((row) => (
+                <TableRow key={row._id} hover>
+                  <TableCell>{row.raisedByTeam}</TableCell>
+                  <TableCell>{row.description}</TableCell>
+                  <TableCell>{row.activities}</TableCell>
+                  <TableCell>{row.responsible}</TableCell>
+                  <TableCell>{row.priority}</TableCell>
+                  <TableCell>
+                    {row.dueDate
+                      ? new Date(row.dueDate).toLocaleDateString()
+                      : ""}
+                  </TableCell>
+                  <TableCell>{row.status}</TableCell>
+                  <TableCell>
+                    {row.nextCheck
+                      ? new Date(row.nextCheck).toLocaleDateString()
+                      : ""}
+                  </TableCell>
+                  <TableCell>{row.remark}</TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      color="info"
+                      onClick={() => navigate(`/defects/view/${row._id}`)}
+                    >
+                      <VisibilitySharp />
+                    </IconButton>
+                    <IconButton
+                      color="info"
+                      onClick={() => navigate(`/defects/edit/${row._id}`)}
+                    >
+                      <Edit />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => setToDelete(row._id)}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -91,12 +135,15 @@ function DefectListPage() {
         <DialogTitle>Delete Defect</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this defect? This action cannot be undone.
+            Are you sure you want to delete this defect? This action cannot be
+            undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setToDelete(null)}>Cancel</Button>
-          <Button color="error" onClick={confirmDelete}>Delete</Button>
+          <Button color="error" onClick={confirmDelete}>
+            Delete
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>
