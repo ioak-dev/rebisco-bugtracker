@@ -74,7 +74,7 @@ function DefectListPage() {
                   <IconButton color="info" onClick={() => navigate(`/defects/view/${row._id}`)}>
                     <VisibilitySharpIcon />
                   </IconButton>
-                  <IconButton color="primary" onClick={() => navigate(`/defects/edit/${row._id}`)}>
+                  <IconButton color="info" onClick={() => navigate(`/defects/edit/${row._id}`)}>
                     <Edit />
                   </IconButton>
                   <IconButton color="error" onClick={() => setToDelete(row._id)}>
