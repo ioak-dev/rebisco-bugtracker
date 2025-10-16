@@ -17,6 +17,7 @@ export const defectsApi = {
   create: (payload: any) => api.post('/defects', payload).then(r => r.data),
   update: (id: string, payload: any) => api.patch(`/defects/${id}`, payload).then(r => r.data),
   remove: (id: string) => api.delete(`/defects/${id}`).then(r => r.data),
+  AddComment:(id:string, newComment:any)=>api.post(`/defects/${id}/comments`,{comment:newComment}).then((r)=>r.data),
 };
 
 export const mailApi = {

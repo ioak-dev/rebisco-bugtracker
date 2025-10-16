@@ -18,7 +18,9 @@ import {
   DialogContentText,
   DialogTitle,
   Dialog,
+  TextField,
 } from "@mui/material";
+
 
 function ViewDefectPage() {
   const auth0 = useAuth0();
@@ -27,6 +29,13 @@ function ViewDefectPage() {
   const [loading, setLoading] = React.useState(true);
   const [form, setForm] = React.useState<any | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+
+  const[editId,seteditId]=React.useState(null);
+  const[editText,seteditText]=React.useState("");
+
+
+  const [comment, setcomment] = React.useState("");
+  const [comments, setcomments] = React.useState<any[]>([]);
 
   React.useEffect(() => {
     (async () => {
@@ -49,6 +58,7 @@ function ViewDefectPage() {
             : "",
           remark: data.remark || "",
         });
+        setcomments(data.comments || []);
       } finally {
         setLoading(false);
       }
@@ -69,7 +79,43 @@ function ViewDefectPage() {
       </Container>
     );
   }
-
+  const oncommentchange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setcomment(e.target.value);
+  };
+  const onsave = async () => {
+    console.log("save button clicked");
+    if (comment.trim() !== "") {
+      const newComment = {
+        id: crypto.randomUUID(),
+        author: {
+          accountId: auth0.user?.sub || "unknown",
+          emailAddress: auth0.user?.email || "noemail@example.com",
+          displayName: auth0.user?.email?.split("@")[0] || "anonymous",
+          active: true,
+        },
+        content: [
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: comment }],
+          },
+        ],
+        created: new Date(),
+        updated: new Date(),
+      };
+      await authorized(auth0, () => {
+        return defectsApi.AddComment(id!, newComment);
+      });
+      setcomments([...comments, newComment]);
+      setcomment("");
+    }
+  };
+  const oncancel = () => {
+    setcomment("");
+  };
+  const onEdit = (eachcomment: any, index: any) => {console.log(eachcomment, index, "yet to update")};
+  const ondelete = (eachcomment: any) => {console.log("yet to update")};
   return (
     <Container maxWidth="md" sx={{ mt: 3 }}>
       <Paper sx={{ p: 3 }}>
@@ -166,6 +212,44 @@ function ViewDefectPage() {
             </Button>
           </DialogActions>
         </Dialog>
+        <Box sx={{ mt: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Comments
+          </Typography>
+          <TextField
+            label="Add a comment"
+            variant="outlined"
+            fullWidth
+            multiline
+            minRows={3}
+            value={comment}
+            onChange={oncommentchange}
+          />
+          <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
+            <Button variant="contained" color="info" onClick={onsave}>
+              Save
+            </Button>
+            <Button variant="text" color="info" onClick={oncancel}>
+              Cancel
+            </Button>
+          </Box>
+          <Box sx={{ mt: 3 }}>
+            {comments.map((eachcomment, index) => (
+              <Paper key={index} sx={{ p: 2, mb: 1 }}>
+                <Typography variant="subtitle2" fontWeight={700}>
+                  {eachcomment.author?.displayName || "user"}
+                </Typography>
+                <Typography variant="body1">
+                  {eachcomment.content?.[0]?.content?.[0]?.text || ""}
+                </Typography>
+                <Box sx={{mt:2, display:"flex" ,gap: -1}}>
+                  <Button variant="text" color="info" onClick={()=>onEdit(eachcomment, index)}>Edit</Button>
+                  <Button variant="text" color="info" onClick={()=>ondelete(eachcomment.id)}>Delete</Button>
+                </Box>
+              </Paper>
+            ))}
+          </Box>
+        </Box>
       </Paper>
     </Container>
   );
