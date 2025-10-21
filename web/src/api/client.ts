@@ -17,7 +17,7 @@ export const defectsApi = {
   create: (payload: any) => api.post('/defects', payload).then(r => r.data),
   update: (id: string, payload: any) => api.patch(`/defects/${id}`, payload).then(r => r.data),
   remove: (id: string) => api.delete(`/defects/${id}`).then(r => r.data),
-  AddComment:(id:string, newComment:any)=>api.post(`/defects/${id}/comments`,{comment:newComment}).then((r)=>r.data),
+  addComment:(id:string, newComment:any)=>api.post(`/defects/${id}/comments`,{comment:newComment}).then((r)=>r.data),
   deletecomment:(id:string, commentid:string)=>api.delete(`/defects/${id}/comments/${commentid}`).then((r)=>r.data),
   updatecomment:(id:string,commentid:string,text:string)=>api.patch(`/defects/${id}/comments/${commentid}`,{text}).then(r=>r.data,),
 };

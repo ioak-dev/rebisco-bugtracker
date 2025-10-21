@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid';
 import {
   Box, Button, Container, MenuItem, Paper, TextField, Typography
 } from '@mui/material';
+import type { IDefect } from './ViewDefectPage';
 
 const priorities = ['Low', 'Medium', 'High', 'Critical'];
 const statuses = ['Open', 'In Progress', 'Blocked', 'Closed', 'Reopened'];
@@ -15,7 +16,7 @@ function EditDefectPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = React.useState(true);
-  const [form, setForm] = React.useState<any | null>(null);
+  const [form, setForm] = React.useState<IDefect| null>(null);
 
   React.useEffect(() => {
     (async () => {
@@ -42,7 +43,7 @@ function EditDefectPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setForm((prev: any) => ({ ...prev, [name]: value }));
+    setForm(prev=>prev?{...prev,[name]:value}:null);
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -50,8 +51,8 @@ function EditDefectPage() {
     if (!id) return;
     const payload = {
       ...form,
-      dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : undefined,
-      nextCheck: form.nextCheck ? new Date(form.nextCheck).toISOString() : undefined,
+      dueDate: form!.dueDate ? new Date(form!.dueDate).toISOString() : undefined,
+      nextCheck: form!.nextCheck ? new Date(form!.nextCheck).toISOString() : undefined,
     };
     await authorized(auth0, () => defectsApi.update(id, payload));
     navigate('/defects');

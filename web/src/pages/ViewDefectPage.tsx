@@ -19,27 +19,74 @@ import {
   DialogTitle,
   Dialog,
   TextField,
+  Menu,
+  MenuItem,
+  IconButton,
 } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
+export interface IComment {
+  id: string;
+  author: {
+    accountId: string;
+    emailAddress: string;
+    displayName: string;
+    active: boolean;
+  };
+  content: {
+    type: string;
+    text: string;
+  }[];
+  created: string | Date;
+  updated: string | Date;
+}
+
+export interface IDefect {
+  _id?: string;
+  raisedByTeam: string;
+  description: string;
+  activities: string;
+  responsible: string;
+  priority: "Low" | "Medium" | "High" | "Critical";
+  dueDate?: string;
+  status: "Open" | "In Progress" | "Blocked" | "Closed" | "Reopened";
+  nextCheck?: string;
+  remark?: string;
+  comments?: IComment[];
+}
 
 function ViewDefectPage() {
   const auth0 = useAuth0();
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = React.useState(true);
-  const [form, setForm] = React.useState<any | null>(null);
+  const [form, setForm] = React.useState<IDefect | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
   const [openCommentDelete, setOpenCommentDelete] = React.useState(false);
-  const [selectedCommentId, setSelectedCommentId] = React.useState<
-    string | null
-  >(null);
+  const [selectedCommentId, setSelectedCommentId] = React.useState<string | null>(null);
 
-  const [comment, setcomment] = React.useState("");
-  const [comments, setcomments] = React.useState<any[]>([]);
+  const [comment, setComment] = React.useState("");
+  const [comments, setComments] = React.useState<IComment[]>([]);
 
-  const [editid, seteditid] = React.useState(null);
-  const [edittext, setedittext] = React.useState("");
+  const [editId, setEditId] = React.useState<string | null>(null);
+  const [editText, setEditText] = React.useState("");
 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [menuCommentId, setMenuCommentId] = React.useState<string | null>(null);
+  const menuOpen = Boolean(anchorEl);
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    commentId: string
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setMenuCommentId(commentId);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuCommentId(null);
+  };
   React.useEffect(() => {
     (async () => {
       if (!id) return;
@@ -61,7 +108,7 @@ function ViewDefectPage() {
             : "",
           remark: data.remark || "",
         });
-        setcomments(data.comments || []);
+        setComments(data.comments || []);
       } finally {
         setLoading(false);
       }
@@ -85,9 +132,9 @@ function ViewDefectPage() {
   const oncommentchange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setcomment(e.target.value);
+    setComment(e.target.value);
   };
-  const onsave = async () => {
+  const onSave = async () => {
     console.log("save button clicked");
     if (comment.trim() !== "") {
       const newComment = {
@@ -108,36 +155,36 @@ function ViewDefectPage() {
         updated: new Date(),
       };
       await authorized(auth0, () => {
-        return defectsApi.AddComment(id!, newComment);
+        return defectsApi.addComment(id!, newComment);
       });
-      setcomments([...comments, newComment]);
-      setcomment("");
+      setComments([...comments, newComment]);
+      setComment("");
     }
   };
-  const oncancel = () => {
-    setcomment("");
+  const onCancel = () => {
+    setComment("");
   };
   const onedit = () => {
-    if (!id || !editid) return;
-    authorized(auth0, () => defectsApi.updatecomment(id, editid, edittext));
-    setcomments((prev) =>
+    if (!id || !editId) return;
+    authorized(auth0, () => defectsApi.updatecomment(id, editId, editText));
+    setComments((prev) =>
       prev.map((c) =>
-        c.id === editid
+        c.id === editId
           ? {
               ...c,
-              content: [{ type: "text", text: edittext }],
+              content: [{ type: "text", text: editText }],
             }
           : c
       )
     );
-    seteditid(null);
-    setedittext("");
+    setEditId(null);
+    setEditText("");
   };
 
   const ondelete = async (commentid: string) => {
     if (!id) return;
     await authorized(auth0, () => defectsApi.deletecomment(id, commentid));
-    setcomments(comments.filter((each) => each.id !== commentid));
+    setComments(comments.filter((each) => each.id !== commentid));
   };
 
   return (
@@ -250,76 +297,89 @@ function ViewDefectPage() {
             onChange={oncommentchange}
           />
           <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
-            <Button variant="contained" color="info" onClick={onsave}>
+            <Button variant="contained" color="info" onClick={onSave}>
               Save
             </Button>
-            <Button variant="text" color="info" onClick={oncancel}>
+            <Button variant="text" color="info" onClick={onCancel}>
               Cancel
             </Button>
           </Box>
+
           <Box sx={{ mt: 3 }}>
-            {comments.map((eachcomment, index) => (
-              <Paper key={index} sx={{ p: 2, mb: 1 }}>
-                <Typography variant="subtitle2" fontWeight={700}>
-                  {eachcomment.author?.displayName || "user"}
-                </Typography>
-                {editid == eachcomment.id ? (
+            {comments.map((eachComment, index) => (
+              <Paper key={index} sx={{ p: 3, mb: 2 }}>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Typography variant="subtitle2" fontWeight={700}>
+                    {eachComment.author?.displayName || "user"}
+                  </Typography>
+                  <IconButton
+                    size="small"
+                    onClick={(e) => handleMenuOpen(e, eachComment.id)}
+                    sx={{ padding: 0, marginLeft: "2px" }}
+                  >
+                    <MoreVertIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+
+                {editId == eachComment.id ? (
                   <>
                     <TextField
                       fullWidth
                       multiline
                       minRows={2}
-                      value={edittext}
-                      onChange={(e) => setedittext(e.target.value)}
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
                     />
                     <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
-                      <Button
-                        variant="contained"
-                        color="info"
-                        onClick={onedit}
-                      >
+                      <Button variant="contained" color="info" onClick={onedit}>
                         Save
                       </Button>
                       <Button
                         variant="text"
                         color="info"
-                        onClick={() => seteditid(null)}
+                        onClick={() => setEditId(null)}
                       >
                         Cancel
                       </Button>
                     </Box>
                   </>
                 ) : (
-                  <>
-                    <Typography variant="body1">
-                      {eachcomment.content?.[0].text}
-                    </Typography>
-                    <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
-                      <Button
-                        variant="text"
-                        color="info"
-                        onClick={() => {
-                          seteditid(eachcomment.id);
-                          setedittext(eachcomment.content?.[0]?.text);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="text"
-                        color="error"
-                        onClick={() => {
-                          setSelectedCommentId(eachcomment.id);
-                          setOpenCommentDelete(true);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </Box>
-                  </>
+                  <Typography variant="body1" sx={{ mt: 1.5 }}>
+                    {eachComment.content?.[0].text}
+                  </Typography>
                 )}
               </Paper>
             ))}
+            <Menu
+              anchorEl={anchorEl}
+              open={menuOpen}
+              onClose={handleMenuClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            >
+              <MenuItem
+                onClick={() => {
+                  const comment = comments.find((c) => c.id == menuCommentId);
+                  if (comment) {
+                    setEditId(comment.id);
+                    setEditText(comment.content?.[0]?.text || "");
+                  }
+                  handleMenuClose();
+                }}
+              >
+                Edit
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  if (menuCommentId) {
+                    setSelectedCommentId(menuCommentId);
+                    setOpenCommentDelete(true);
+                  }
+                  handleMenuClose();
+                }}
+              >
+                Delete
+              </MenuItem>
+            </Menu>
           </Box>
         </Box>
         <Dialog

@@ -105,37 +105,34 @@ router.post("/:id/comments", checkJwt, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-router.delete('/:id/comments/:commentid',checkJwt,async(req,res)=> {
-  try{
-    const {id,commentid}=req.params;
-    const defect=await Defect.findById(id);
-    if(!defect)
-      return res.status(404).json({messege:'defect not found'});
-    defect.comments=defect.comments.filter((c) =>c.id!== commentid);
+router.delete("/:id/comments/:commentid", checkJwt, async (req, res) => {
+  try {
+    const { id, commentid } = req.params;
+    const defect = await Defect.findById(id);
+    if (!defect) return res.status(404).json({ messege: "defect not found" });
+    defect.comments = defect.comments.filter((c) => c.id !== commentid);
     await defect.save();
-    res.status(200).json({messege:"comment deleted"});
-    }catch (err){
-      res.status(500).json({message:err.message});
+    res.status(200).json({ messege: "comment deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+router.patch("/:id/comments/:commentid", checkJwt, async (req, res) => {
+  try {
+    const defect = await Defect.findById(req.params.id);
+    if (!defect) {
+      return res.status(404).json({ messege: "defect not found" });
     }
-  });
-router.patch("/:id/comments/:commentid",checkJwt,async(req,res)=>{
-  try{
-    const defect=await Defect.findById(req.params.id);
-    if(!defect){
-      return res.status(404).json({messege:"defect not found"});
+    const comment = defect.comments.find((c) => c.id === req.params.commentid);
+    if (!comment) {
+      return res.status(404).json({ message: "comment not found" });
     }
-    const comment=defect.comments.find(
-      (c)=>c.id===req.params.commentid
-    );
-    if(!comment){
-      return res.status(404).json({message:"comment not found"});
-    }
-    comment.content[0].text=req.body.text;
-    comment.updated=new Date();
+    comment.content[0].text = req.body.text;
+    comment.updated = new Date();
     await defect.save();
-    res.status(200).json({messege:"comment updated",comment});
-  }catch(err){
-    res.status(500).json({message:err.message});
+    res.status(200).json({ messege: "comment updated", comment });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
