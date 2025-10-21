@@ -54,12 +54,7 @@ const defectSchema = new mongoose.Schema(
         content: [
           {
             type: { type: String },
-            content: [
-              {
-                type: { type: String },
-                text: { type: String },
-              },
-            ],
+            text: { type: String },
           },
         ],
         created: { type: Date, default: Date.now },

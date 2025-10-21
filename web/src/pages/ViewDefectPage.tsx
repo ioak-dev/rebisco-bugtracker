@@ -21,7 +21,6 @@ import {
   TextField,
 } from "@mui/material";
 
-
 function ViewDefectPage() {
   const auth0 = useAuth0();
   const navigate = useNavigate();
@@ -30,12 +29,16 @@ function ViewDefectPage() {
   const [form, setForm] = React.useState<any | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
-  const[editId,seteditId]=React.useState(null);
-  const[editText,seteditText]=React.useState("");
-
+  const [openCommentDelete, setOpenCommentDelete] = React.useState(false);
+  const [selectedCommentId, setSelectedCommentId] = React.useState<
+    string | null
+  >(null);
 
   const [comment, setcomment] = React.useState("");
   const [comments, setcomments] = React.useState<any[]>([]);
+
+  const [editid, seteditid] = React.useState(null);
+  const [edittext, setedittext] = React.useState("");
 
   React.useEffect(() => {
     (async () => {
@@ -97,8 +100,8 @@ function ViewDefectPage() {
         },
         content: [
           {
-            type: "paragraph",
-            content: [{ type: "text", text: comment }],
+            type: "text",
+            text: comment,
           },
         ],
         created: new Date(),
@@ -114,8 +117,29 @@ function ViewDefectPage() {
   const oncancel = () => {
     setcomment("");
   };
-  const onEdit = (eachcomment: any, index: any) => {console.log(eachcomment, index, "yet to update")};
-  const ondelete = (eachcomment: any) => {console.log("yet to update")};
+  const onedit = () => {
+    if (!id || !editid) return;
+    authorized(auth0, () => defectsApi.updatecomment(id, editid, edittext));
+    setcomments((prev) =>
+      prev.map((c) =>
+        c.id === editid
+          ? {
+              ...c,
+              content: [{ type: "text", text: edittext }],
+            }
+          : c
+      )
+    );
+    seteditid(null);
+    setedittext("");
+  };
+
+  const ondelete = async (commentid: string) => {
+    if (!id) return;
+    await authorized(auth0, () => defectsApi.deletecomment(id, commentid));
+    setcomments(comments.filter((each) => each.id !== commentid));
+  };
+
   return (
     <Container maxWidth="md" sx={{ mt: 3 }}>
       <Paper sx={{ p: 3 }}>
@@ -199,7 +223,7 @@ function ViewDefectPage() {
           open={openDeleteDialog}
           onClose={() => setOpenDeleteDialog(false)}
         >
-          <DialogTitle>Delete Defect</DialogTitle>
+          <DialogTitle>Delete</DialogTitle>
           <DialogContent>
             <DialogContentText>
               Are you sure you want to delete this defect?
@@ -239,20 +263,92 @@ function ViewDefectPage() {
                 <Typography variant="subtitle2" fontWeight={700}>
                   {eachcomment.author?.displayName || "user"}
                 </Typography>
-                <Typography variant="body1">
-                  {eachcomment.content?.[0]?.content?.[0]?.text || ""}
-                </Typography>
-                <Box sx={{mt:2, display:"flex" ,gap: -1}}>
-                  <Button variant="text" color="info" onClick={()=>onEdit(eachcomment, index)}>Edit</Button>
-                  <Button variant="text" color="info" onClick={()=>ondelete(eachcomment.id)}>Delete</Button>
-                </Box>
+                {editid == eachcomment.id ? (
+                  <>
+                    <TextField
+                      fullWidth
+                      multiline
+                      minRows={2}
+                      value={edittext}
+                      onChange={(e) => setedittext(e.target.value)}
+                    />
+                    <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
+                      <Button
+                        variant="contained"
+                        color="info"
+                        onClick={onedit}
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        variant="text"
+                        color="info"
+                        onClick={() => seteditid(null)}
+                      >
+                        Cancel
+                      </Button>
+                    </Box>
+                  </>
+                ) : (
+                  <>
+                    <Typography variant="body1">
+                      {eachcomment.content?.[0].text}
+                    </Typography>
+                    <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
+                      <Button
+                        variant="text"
+                        color="info"
+                        onClick={() => {
+                          seteditid(eachcomment.id);
+                          setedittext(eachcomment.content?.[0]?.text);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="text"
+                        color="error"
+                        onClick={() => {
+                          setSelectedCommentId(eachcomment.id);
+                          setOpenCommentDelete(true);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                  </>
+                )}
               </Paper>
             ))}
           </Box>
         </Box>
+        <Dialog
+          open={openCommentDelete}
+          onClose={() => setOpenCommentDelete(false)}
+        >
+          <DialogTitle>Delete</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this comment?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenCommentDelete(false)}>Cancel</Button>
+            <Button
+              color="error"
+              onClick={() => {
+                if (selectedCommentId) {
+                  ondelete(selectedCommentId);
+                  setOpenCommentDelete(false);
+                }
+              }}
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Paper>
     </Container>
   );
 }
-
 export default ViewDefectPage;
