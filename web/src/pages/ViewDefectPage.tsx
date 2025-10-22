@@ -22,6 +22,7 @@ import {
   Menu,
   MenuItem,
   IconButton,
+  Stack,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
@@ -64,7 +65,9 @@ function ViewDefectPage() {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
   const [openCommentDelete, setOpenCommentDelete] = React.useState(false);
-  const [selectedCommentId, setSelectedCommentId] = React.useState<string | null>(null);
+  const [selectedCommentId, setSelectedCommentId] = React.useState<
+    string | null
+  >(null);
 
   const [comment, setComment] = React.useState("");
   const [comments, setComments] = React.useState<IComment[]>([]);
@@ -249,7 +252,12 @@ function ViewDefectPage() {
           >
             Delete
           </Button>
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Stack
+            spacing={3}
+            justifyContent={"space-between"}
+            mt={2}
+            direction="row"
+          >
             <Button
               variant="contained"
               color="info"
@@ -264,7 +272,7 @@ function ViewDefectPage() {
             >
               Edit
             </Button>
-          </Box>
+          </Stack>
         </Box>
         <Dialog
           open={openDeleteDialog}
@@ -292,22 +300,21 @@ function ViewDefectPage() {
             variant="outlined"
             fullWidth
             multiline
-            minRows={3}
+            minRows={2}
             value={comment}
             onChange={oncommentchange}
           />
-          <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
+          <Stack spacing={2} direction="row" mt={2}>
             <Button variant="contained" color="info" onClick={onSave}>
               Save
             </Button>
             <Button variant="text" color="info" onClick={onCancel}>
               Cancel
             </Button>
-          </Box>
-
+          </Stack>
           <Box sx={{ mt: 3 }}>
             {comments.map((eachComment, index) => (
-              <Paper key={index} sx={{ p: 3, mb: 2 }}>
+              <Paper key={index} sx={{ p: 2, mb: 2 }}>
                 <Box display="flex" alignItems="center" gap={1}>
                   <Typography variant="subtitle2" fontWeight={700}>
                     {eachComment.author?.displayName || "user"}
@@ -315,7 +322,7 @@ function ViewDefectPage() {
                   <IconButton
                     size="small"
                     onClick={(e) => handleMenuOpen(e, eachComment.id)}
-                    sx={{ padding: 0, marginLeft: "2px" }}
+                    sx={{ padding: 0, marginLeft: "5px" }}
                   >
                     <MoreVertIcon fontSize="small" />
                   </IconButton>
@@ -330,7 +337,7 @@ function ViewDefectPage() {
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
                     />
-                    <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
+                    <Stack spacing={2} mt={2} direction="row">
                       <Button variant="contained" color="info" onClick={onedit}>
                         Save
                       </Button>
@@ -341,7 +348,7 @@ function ViewDefectPage() {
                       >
                         Cancel
                       </Button>
-                    </Box>
+                    </Stack>
                   </>
                 ) : (
                   <Typography variant="body1" sx={{ mt: 1.5 }}>
@@ -356,7 +363,7 @@ function ViewDefectPage() {
               onClose={handleMenuClose}
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             >
-              <MenuItem
+              <MenuItem 
                 onClick={() => {
                   const comment = comments.find((c) => c.id == menuCommentId);
                   if (comment) {
