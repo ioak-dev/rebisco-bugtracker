@@ -1,0 +1,6 @@
+@rebisco_bugtracker.Api_HostAddress = http://localhost:5032
+
+GET {{rebisco_bugtracker.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
