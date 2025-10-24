@@ -10,7 +10,7 @@ import UserListPage from './pages/UserListPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ViewDefectPage from './pages/ViewDefectPage';
 
-function App({mode,setMode}:{mode:'light'|'dark'; setMode:React.Dispatch<React.SetStateAction<"light"|"dark">>}) {
+function App() {
   const { isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
 
@@ -25,8 +25,8 @@ function App({mode,setMode}:{mode:'light'|'dark'; setMode:React.Dispatch<React.S
   }
 
   return (
-    <div className="min-h-screen">
-      <NavBar mode={mode} setMode={setMode}/>
+    <div className="min-h-screen bg-gray-100">
+      <NavBar/>
       <main className="container mx-auto">
         <Routes>
           <Route path="/login" element={<LoginPage />} />

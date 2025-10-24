@@ -17,18 +17,13 @@ import {
   Alert,
   Box,
   CircularProgress,
+  useColorScheme,//used
 } from "@mui/material";
 import { AccountCircle, DarkMode, LightMode } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
-function NavBar({
-  mode,
-  setMode,
-}: {
-  mode: "light" | "dark";
-  setMode: React.Dispatch<React.SetStateAction<"light" | "dark">>;
-}) {
+function NavBar() {// removed
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const { logout, user, isAuthenticated, loginWithRedirect } = useAuth0();
@@ -37,6 +32,8 @@ function NavBar({
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
+
+  const {mode,setMode}=useColorScheme();//
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

@@ -5,11 +5,11 @@ import "./index.css";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
-import { getTheme } from "./theme";
+import theme from "./theme";
+import { CssBaseline } from "@mui/material";
 
-const Root = () => {
-  const [mode, setMode] = React.useState<"light" | "dark">("light");
-  return (
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
     <Auth0Provider
       domain={import.meta.env.VITE_AUTH0_DOMAIN}
       clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
@@ -18,16 +18,12 @@ const Root = () => {
         audience: import.meta.env.VITE_AUTH0_AUDIENCE,
       }}
     >
-      <ThemeProvider theme={getTheme(mode)}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline/>
         <Router>
-          <App mode={mode} setMode={setMode} />
+          <App/>
         </Router>
       </ThemeProvider>
     </Auth0Provider>
-  );
-};
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Root />
   </React.StrictMode>
 );
