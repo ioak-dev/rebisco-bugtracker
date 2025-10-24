@@ -191,7 +191,7 @@ function ViewDefectPage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 3 }}>
+    <Container maxWidth="md" sx={{ mt: 3, }}>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h4" gutterBottom>
           Defect
@@ -200,7 +200,7 @@ function ViewDefectPage() {
           <Table>
             <TableBody>
               <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Raised By Team </TableCell>
+                <TableCell sx={{ fontWeight: 700}}>Raised By Team </TableCell>
                 <TableCell>{form.raisedByTeam}</TableCell>
               </TableRow>
               <TableRow>
@@ -246,7 +246,7 @@ function ViewDefectPage() {
           mt={2}
         >
           <Button
-            variant="contained"
+            variant="contained" 
             color="error"
             onClick={() => setOpenDeleteDialog(true)}
           >
@@ -258,7 +258,7 @@ function ViewDefectPage() {
             mt={2}
             direction="row"
           >
-            <Button
+            <Button 
               variant="contained"
               color="info"
               onClick={() => navigate(`/defects`)}
@@ -300,7 +300,7 @@ function ViewDefectPage() {
             variant="outlined"
             fullWidth
             multiline
-            minRows={2}
+            minRows={3}
             value={comment}
             onChange={oncommentchange}
           />
@@ -322,13 +322,42 @@ function ViewDefectPage() {
                   <IconButton
                     size="small"
                     onClick={(e) => handleMenuOpen(e, eachComment.id)}
-                    sx={{ padding: 0, marginLeft: "5px" }}
+                    sx={{ padding: 0, marginLeft: "10px" }}
                   >
-                    <MoreVertIcon fontSize="small" />
+                    <MoreVertIcon fontSize="medium" />
                   </IconButton>
                 </Box>
-
-                {editId == eachComment.id ? (
+                <Menu
+              anchorEl={anchorEl}
+              open={menuOpen}
+              onClose={handleMenuClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            >
+              <MenuItem 
+                onClick={() => {
+                  const comment = comments.find((c) => c.id === menuCommentId);
+                  if (comment) {
+                    setEditId(comment.id);
+                    setEditText(comment.content?.[0]?.text || "");
+                  }
+                  handleMenuClose();
+                }}
+              >
+                Edit
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  if (menuCommentId) {
+                    setSelectedCommentId(menuCommentId);
+                    setOpenCommentDelete(true);
+                  }
+                  handleMenuClose();
+                }}
+              >
+                Delete
+              </MenuItem>
+            </Menu>
+                {editId === eachComment.id ? (
                   <>
                     <TextField
                       fullWidth
@@ -357,36 +386,6 @@ function ViewDefectPage() {
                 )}
               </Paper>
             ))}
-            <Menu
-              anchorEl={anchorEl}
-              open={menuOpen}
-              onClose={handleMenuClose}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            >
-              <MenuItem 
-                onClick={() => {
-                  const comment = comments.find((c) => c.id == menuCommentId);
-                  if (comment) {
-                    setEditId(comment.id);
-                    setEditText(comment.content?.[0]?.text || "");
-                  }
-                  handleMenuClose();
-                }}
-              >
-                Edit
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  if (menuCommentId) {
-                    setSelectedCommentId(menuCommentId);
-                    setOpenCommentDelete(true);
-                  }
-                  handleMenuClose();
-                }}
-              >
-                Delete
-              </MenuItem>
-            </Menu>
           </Box>
         </Box>
         <Dialog

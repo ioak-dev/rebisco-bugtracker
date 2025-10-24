@@ -10,7 +10,7 @@ import UserListPage from './pages/UserListPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ViewDefectPage from './pages/ViewDefectPage';
 
-function App() {
+function App({mode,setMode}:{mode:'light'|'dark'; setMode:React.Dispatch<React.SetStateAction<"light"|"dark">>}) {
   const { isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
 
@@ -25,8 +25,8 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <NavBar />
+    <div className="min-h-screen">
+      <NavBar mode={mode} setMode={setMode}/>
       <main className="container mx-auto">
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -36,6 +36,7 @@ function App() {
           <Route path="/defects/edit/:id" element={<ProtectedRoute component={EditDefectPage} />} />
           <Route path="/users" element={<ProtectedRoute component={UserListPage} />} />
           <Route path="/defects/view/:id" element={<ProtectedRoute component={ViewDefectPage} />} />
+   
         </Routes>
       </main>
     </div>
