@@ -1,14 +1,14 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Defect = require('../models/Defect');
-const { auth } = require('express-oauth2-jwt-bearer');
+const Defect = require("../models/Defect");
+const { auth } = require("express-oauth2-jwt-bearer");
 
 const checkJwt = auth({
   audience: process.env.AUTH0_AUDIENCE,
   issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
 });
 
-router.get('/', checkJwt, async (req, res) => {
+router.get("/", checkJwt, async (req, res) => {
   try {
     const defects = await Defect.find().sort({ createdAt: -1 });
     res.json(defects);
@@ -17,17 +17,17 @@ router.get('/', checkJwt, async (req, res) => {
   }
 });
 
-router.get('/:id', checkJwt, async (req, res) => {
+router.get("/:id", checkJwt, async (req, res) => {
   try {
     const defect = await Defect.findById(req.params.id);
-    if (!defect) return res.status(404).json({ message: 'Defect not found' });
+    if (!defect) return res.status(404).json({ message: "Defect not found" });
     res.json(defect);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-router.post('/', checkJwt, async (req, res) => {
+router.post("/", checkJwt, async (req, res) => {
   const {
     raisedByTeam,
     description,
@@ -50,6 +50,7 @@ router.post('/', checkJwt, async (req, res) => {
     status,
     nextCheck,
     remark,
+    comments: [],
   });
 
   try {
@@ -60,7 +61,7 @@ router.post('/', checkJwt, async (req, res) => {
   }
 });
 
-router.patch('/:id', checkJwt, async (req, res) => {
+router.patch("/:id", checkJwt, async (req, res) => {
   try {
     const update = req.body;
     const updatedDefect = await Defect.findByIdAndUpdate(
@@ -69,7 +70,8 @@ router.patch('/:id', checkJwt, async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    if (!updatedDefect) return res.status(404).json({ message: 'Defect not found' });
+    if (!updatedDefect)
+      return res.status(404).json({ message: "Defect not found" });
 
     res.json(updatedDefect);
   } catch (err) {
@@ -77,11 +79,58 @@ router.patch('/:id', checkJwt, async (req, res) => {
   }
 });
 
-router.delete('/:id', checkJwt, async (req, res) => {
+router.delete("/:id", checkJwt, async (req, res) => {
   try {
     const deleted = await Defect.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: 'Defect not found' });
-    res.json({ message: 'Defect deleted' });
+    if (!deleted) return res.status(404).json({ message: "Defect not found" });
+    res.json({ message: "Defect deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+router.post("/:id/comments", checkJwt, async (req, res) => {
+  try {
+    const newcomment = req.body.comment;
+    const defect = await Defect.findById(req.params.id);
+    if (!defect) {
+      return res.status(404).json({ message: "Defect not found" });
+    }
+    if (!defect.comments) {
+      defect.comments = [];
+    }
+    defect.comments.push(newcomment);
+    await defect.save();
+    res.status(200).json({ message: "comment added", comment: newcomment });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+router.delete("/:id/comments/:commentid", checkJwt, async (req, res) => {
+  try {
+    const { id, commentid } = req.params;
+    const defect = await Defect.findById(id);
+    if (!defect) return res.status(404).json({ messege: "defect not found" });
+    defect.comments = defect.comments.filter((c) => c.id !== commentid);
+    await defect.save();
+    res.status(200).json({ messege: "comment deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+router.patch("/:id/comments/:commentid", checkJwt, async (req, res) => {
+  try {
+    const defect = await Defect.findById(req.params.id);
+    if (!defect) {
+      return res.status(404).json({ messege: "defect not found" });
+    }
+    const comment = defect.comments.find((c) => c.id === req.params.commentid);
+    if (!comment) {
+      return res.status(404).json({ message: "comment not found" });
+    }
+    comment.content[0].text = req.body.text;
+    comment.updated = new Date();
+    await defect.save();
+    res.status(200).json({ messege: "comment updated", comment });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

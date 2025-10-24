@@ -22,11 +22,12 @@ import {
 } from "@mui/material";
 import { Delete, Edit, Add, VisibilitySharp } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import type { IDefect } from "./ViewDefectPage";
 
 function DefectListPage() {
   const auth0 = useAuth0();
   const navigate = useNavigate();
-  const [rows, setRows] = React.useState<any[]>([]);
+  const [rows, setRows] = React.useState<IDefect[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [toDelete, setToDelete] = React.useState<string | null>(null);
 
@@ -120,7 +121,7 @@ function DefectListPage() {
                     </IconButton>
                     <IconButton
                       color="error"
-                      onClick={() => setToDelete(row._id)}
+                      onClick={() => setToDelete(row._id?? null)}
                     >
                       <Delete />
                     </IconButton>

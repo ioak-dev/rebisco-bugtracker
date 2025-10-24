@@ -4,6 +4,7 @@ import { authorized, defectsApi, mailApi } from '../api/client';
 import { useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import { Box, Button, Container, MenuItem, Paper, TextField, Typography } from '@mui/material';
+import type { IDefect } from './ViewDefectPage';
 
 
 
@@ -14,7 +15,7 @@ function CreateDefectPage() {
   const auth0 = useAuth0();
   const { user } = useAuth0();
   const navigate = useNavigate();
-  const [form, setForm] = React.useState({
+  const [form, setForm] = React.useState<IDefect>({
     raisedByTeam: '',
     description: '',
     activities: '',

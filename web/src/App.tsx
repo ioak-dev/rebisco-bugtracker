@@ -26,7 +26,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <NavBar />
+      <NavBar/>
       <main className="container mx-auto">
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -36,6 +36,7 @@ function App() {
           <Route path="/defects/edit/:id" element={<ProtectedRoute component={EditDefectPage} />} />
           <Route path="/users" element={<ProtectedRoute component={UserListPage} />} />
           <Route path="/defects/view/:id" element={<ProtectedRoute component={ViewDefectPage} />} />
+   
         </Routes>
       </main>
     </div>
