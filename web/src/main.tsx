@@ -6,8 +6,6 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import { BrowserRouter as Router } from "react-router-dom";
 import theme from "./theme";
 import { CssBaseline,ThemeProvider } from "@mui/material";
-import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
-
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

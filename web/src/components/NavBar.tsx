@@ -16,11 +16,15 @@ import {
   Alert,
   Box,
   CircularProgress,
+  Tooltip,
   useColorScheme,
-  ToggleButtonGroup,
-  ToggleButton,
 } from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
+import {
+  AccountCircle,
+  LightMode,
+  DarkMode,
+  Laptop,
+} from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -34,33 +38,16 @@ function NavBar() {
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
 
-  const { mode, setMode ,systemMode} = useColorScheme(); 
-  console.log('current mode:',mode);
-  console.log('system mode:',systemMode)
-  /*const [pref, setPref] = React.useState<"light" | "dark" | "system">("system");
+  const { mode, setMode, systemMode } = useColorScheme();
+  console.log("current mode:", mode);
+  console.log("system mode:", systemMode);
 
   React.useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme:dark)");
-    const apply = () =>
-      setMode(pref === "system" ? (mq.matches ? "dark" : "light") : pref);
-    apply();
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, [pref, setMode]);*/
+    setMode("system");
+  }, []);
 
-  /*const handleThemeChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newMode: "light" | "dark" | "system"|null
-  ) => {
-    if(newMode!==null)
-      {setMode(newMode);}};*/
-
-  //   if (val) setPref(val);
-  // };
-   
-  const handleChange = (event: any, newAlignment: any )=> {
-    console.log(event, newAlignment);
-    setMode(newAlignment);
+  const handleChange = (newMode: "light" | "dark" | "system") => {
+    setMode(newMode);
   };
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -70,12 +57,6 @@ function NavBar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
- /* React.useEffect(() => {
-    if (!mode) {
-      setMode("system");
-    }
-  }, [mode, setMode]);*/
 
   const handleSignOut = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
@@ -161,27 +142,37 @@ function NavBar() {
         )} */}
         <div>
           {isAuthenticated ? (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                {/* <LightMode fontSize="small" /> {/*sx={{color:mode === 'light'?'#ffeb3b':'#bdbdbd}}-----
-                <Switch
-                  checked={mode === "dark"}
-                  onChange={() => setMode(mode === "light" ? "dark" : "light")}
-                  color="default"
-                />
-                <DarkMode fontSize="small" /> */}
-                <ToggleButtonGroup
-                  color="primary"
-                  value={mode||"system"}
-                  exclusive
-                  onChange={handleChange}
-                  size="small"
-                  aria-label="Platform"
-                >
-                  <ToggleButton value="light">Light</ToggleButton>
-                  <ToggleButton value="system">System</ToggleButton>
-                  <ToggleButton value="dark">Dark</ToggleButton>
-                </ToggleButtonGroup>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <Tooltip title="light Mode">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleChange("light")}
+                  >
+                    <LightMode fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="System Mode">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleChange("system")}
+                  >
+                    <Laptop fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Dark Mode">
+                  <IconButton 
+                    size="small" 
+                    onClick={() => handleChange("dark")}>
+                    <DarkMode fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               </Box>
               <IconButton
                 size="large"

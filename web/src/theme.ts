@@ -1,6 +1,4 @@
 import { createTheme} from "@mui/material/styles";
-import { extendTheme } from "@mui/material/styles";
-
 
 const theme = createTheme({
   colorSchemes: {
