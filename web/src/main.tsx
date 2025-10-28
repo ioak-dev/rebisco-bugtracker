@@ -4,9 +4,10 @@ import App from "./App.tsx";
 import "./index.css";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { BrowserRouter as Router } from "react-router-dom";
-import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
-import { CssBaseline } from "@mui/material";
+import { CssBaseline,ThemeProvider } from "@mui/material";
+import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
+
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -19,7 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       }}
     >
       <ThemeProvider theme={theme}>
-        <CssBaseline/>
+        <CssBaseline />
         <Router>
           <App/>
         </Router>

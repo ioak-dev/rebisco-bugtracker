@@ -1,4 +1,6 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme} from "@mui/material/styles";
+import { extendTheme } from "@mui/material/styles";
+
 
 const theme = createTheme({
   colorSchemes: {
@@ -16,12 +18,8 @@ const theme = createTheme({
     dark: {
       palette: {
         mode: "dark",
-        primary: {
-          main: "#EB2A2E",
-        },
-        secondary: {
-          main: "#ff4081",
-        },
+        primary: {main: "#EB2A2E",},
+        secondary: {main: "#ff4081",},
         background: {
           default: "#121212",
           paper: "#1E1E1E",
@@ -29,6 +27,7 @@ const theme = createTheme({
       },
     },
   },
+  
 
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',

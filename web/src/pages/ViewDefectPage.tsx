@@ -22,9 +22,11 @@ import {
   Menu,
   MenuItem,
   IconButton,
+  Tooltip,
   Stack,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { formatDistanceToNow, format } from "date-fns";
 
 export interface IComment {
   id: string;
@@ -191,7 +193,7 @@ function ViewDefectPage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 3, }}>
+    <Container maxWidth="md" sx={{ mt: 3 }}>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h4" gutterBottom>
           Defect
@@ -200,7 +202,7 @@ function ViewDefectPage() {
           <Table>
             <TableBody>
               <TableRow>
-                <TableCell sx={{ fontWeight: 700}}>Raised By Team </TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Raised By Team </TableCell>
                 <TableCell>{form.raisedByTeam}</TableCell>
               </TableRow>
               <TableRow>
@@ -246,7 +248,7 @@ function ViewDefectPage() {
           mt={2}
         >
           <Button
-            variant="contained" 
+            variant="contained"
             color="error"
             onClick={() => setOpenDeleteDialog(true)}
           >
@@ -258,7 +260,7 @@ function ViewDefectPage() {
             mt={2}
             direction="row"
           >
-            <Button 
+            <Button
               variant="contained"
               color="info"
               onClick={() => navigate(`/defects`)}
@@ -316,9 +318,23 @@ function ViewDefectPage() {
             {comments.map((eachComment, index) => (
               <Paper key={index} sx={{ p: 2, mb: 2 }}>
                 <Box display="flex" alignItems="center" gap={1}>
-                  <Typography variant="subtitle2" fontWeight={700}>
+                  <Typography variant="subtitle2" fontWeight={700} sx={{cursor:"default"}}>
                     {eachComment.author?.displayName || "user"}
                   </Typography>
+                  <Tooltip
+                    placement="top"
+                    title={format(new Date(eachComment.created), "PPpp")}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                        cursor: "default",
+                      }}
+                    >
+                      {formatDistanceToNow(new Date(eachComment.created))} ago
+                    </Typography>
+                  </Tooltip>
                   <IconButton
                     size="small"
                     onClick={(e) => handleMenuOpen(e, eachComment.id)}
@@ -328,35 +344,37 @@ function ViewDefectPage() {
                   </IconButton>
                 </Box>
                 <Menu
-              anchorEl={anchorEl}
-              open={menuOpen}
-              onClose={handleMenuClose}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            >
-              <MenuItem 
-                onClick={() => {
-                  const comment = comments.find((c) => c.id === menuCommentId);
-                  if (comment) {
-                    setEditId(comment.id);
-                    setEditText(comment.content?.[0]?.text || "");
-                  }
-                  handleMenuClose();
-                }}
-              >
-                Edit
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  if (menuCommentId) {
-                    setSelectedCommentId(menuCommentId);
-                    setOpenCommentDelete(true);
-                  }
-                  handleMenuClose();
-                }}
-              >
-                Delete
-              </MenuItem>
-            </Menu>
+                  anchorEl={anchorEl}
+                  open={menuOpen}
+                  onClose={handleMenuClose}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      const comment = comments.find(
+                        (c) => c.id === menuCommentId
+                      );
+                      if (comment) {
+                        setEditId(comment.id);
+                        setEditText(comment.content?.[0]?.text || "");
+                      }
+                      handleMenuClose();
+                    }}
+                  >
+                    Edit
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      if (menuCommentId) {
+                        setSelectedCommentId(menuCommentId);
+                        setOpenCommentDelete(true);
+                      }
+                      handleMenuClose();
+                    }}
+                  >
+                    Delete
+                  </MenuItem>
+                </Menu>
                 {editId === eachComment.id ? (
                   <>
                     <TextField
