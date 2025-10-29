@@ -169,7 +169,7 @@ function ViewDefectPage() {
   const onCancel = () => {
     setComment("");
   };
-  const onedit = () => {
+  const onEdit = () => {
     if (!id || !editId) return;
     authorized(auth0, () => defectsApi.updatecomment(id, editId, editText));
     setComments((prev) =>
@@ -317,8 +317,12 @@ function ViewDefectPage() {
           <Box sx={{ mt: 3 }}>
             {comments.map((eachComment, index) => (
               <Paper key={index} sx={{ p: 2, mb: 2 }}>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <Typography variant="subtitle2" fontWeight={700} sx={{cursor:"default"}}>
+                <Box display="flex" alignItems="center" gap={0.5}>
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight={700}
+                    sx={{ cursor: "default" }}
+                  >
                     {eachComment.author?.displayName || "user"}
                   </Typography>
                   <Tooltip
@@ -385,7 +389,7 @@ function ViewDefectPage() {
                       onChange={(e) => setEditText(e.target.value)}
                     />
                     <Stack spacing={2} mt={2} direction="row">
-                      <Button variant="contained" color="info" onClick={onedit}>
+                      <Button variant="contained" color="info" onClick={onEdit}>
                         Save
                       </Button>
                       <Button

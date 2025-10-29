@@ -6,8 +6,6 @@ import Grid from '@mui/material/Grid';
 import { Box, Button, Container, MenuItem, Paper, TextField, Typography } from '@mui/material';
 import type { IDefect } from './ViewDefectPage';
 
-
-
 const priorities = ['Low', 'Medium', 'High', 'Critical'];
 const statuses = ['Open', 'In Progress', 'Blocked', 'Closed', 'Reopened'];
 
