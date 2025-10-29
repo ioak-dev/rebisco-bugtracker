@@ -193,7 +193,7 @@ function ViewDefectPage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 3 }}>
+    <Container maxWidth="md" sx={{ mt: 3, }}>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h4" gutterBottom>
           Defect
@@ -202,7 +202,7 @@ function ViewDefectPage() {
           <Table>
             <TableBody>
               <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Raised By Team </TableCell>
+                <TableCell sx={{ fontWeight: 700}}>Raised By Team </TableCell>
                 <TableCell>{form.raisedByTeam}</TableCell>
               </TableRow>
               <TableRow>
@@ -248,7 +248,7 @@ function ViewDefectPage() {
           mt={2}
         >
           <Button
-            variant="contained"
+            variant="contained" 
             color="error"
             onClick={() => setOpenDeleteDialog(true)}
           >

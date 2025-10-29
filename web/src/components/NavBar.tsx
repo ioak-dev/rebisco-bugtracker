@@ -167,9 +167,7 @@ function NavBar() {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Dark Mode">
-                  <IconButton 
-                    size="small" 
-                    onClick={() => handleChange("dark")}>
+                  <IconButton size="small" onClick={() => handleChange("dark")}>
                     <DarkMode fontSize="small" />
                   </IconButton>
                 </Tooltip>
