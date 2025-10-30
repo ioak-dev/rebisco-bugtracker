@@ -1,6 +1,7 @@
 @rebisco_bugtracker.Api_HostAddress = http://localhost:5032
 
-GET {{rebisco_bugtracker.Api_HostAddress}}/weatherforecast/
+### Get Defects
+GET {{rebisco_bugtracker.Api_HostAddress}}/defects
 Accept: application/json
 
 ###

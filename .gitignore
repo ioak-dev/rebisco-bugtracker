@@ -62,3 +62,36 @@ volumes/
 !.yarn/versions
 
 .pnp.*
+
+# Build outputs
+bin/
+obj/
+**/**/obj/
+artifacts/
+publish/
+TestResults/
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.user
+*.userprefs
+
+# IDEs & Editors
+.vs/
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
+*.sln.iml
+
+# OS generated files
+.DS_Store
+Thumbs.db
