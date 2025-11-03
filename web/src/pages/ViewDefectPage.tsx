@@ -2,31 +2,11 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { authorized, defectsApi } from "../api/client";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Container,
-  Paper,
-  Typography,
-  TableContainer,
-  TableBody,
-  TableCell,
-  TableRow,
-  Table,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Dialog,
-  TextField,
-  Menu,
-  MenuItem,
-  IconButton,
-  Tooltip,
-  Stack,
-} from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { formatDistanceToNow, format } from "date-fns";
+import { Container, Typography, Paper } from "@mui/material";
+
+import DefectDeatil from "./DefectDetail";
+import Comments from "./Comments";
+import CommentList from "./CommentList";
 
 export interface IComment {
   id: string;
@@ -134,7 +114,8 @@ function ViewDefectPage() {
       </Container>
     );
   }
-  const oncommentchange = (
+
+  const onCommentChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setComment(e.target.value);
@@ -178,6 +159,7 @@ function ViewDefectPage() {
           ? {
               ...c,
               content: [{ type: "text", text: editText }],
+              updated: new Date(),
             }
           : c
       )
@@ -193,248 +175,42 @@ function ViewDefectPage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 3, }}>
+    <Container maxWidth="md" sx={{ mt: 3 }}>
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Defect
-        </Typography>
-        <TableContainer>
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700}}>Raised By Team </TableCell>
-                <TableCell>{form.raisedByTeam}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Responsible </TableCell>
-                <TableCell>{form.responsible}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Description </TableCell>
-                <TableCell>{form.description}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Activities </TableCell>
-                <TableCell>{form.activities}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Priority </TableCell>
-                <TableCell>{form.priority}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Status </TableCell>
-                <TableCell>{form.status}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Due Date </TableCell>
-                <TableCell>{form.dueDate}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Next Check </TableCell>
-                <TableCell>{form.nextCheck}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Remark </TableCell>
-                <TableCell>{form.remark}</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Box
-          display="flex"
-          gap={2}
-          justifyContent="space-between"
-          alignItems="center"
-          mt={2}
-        >
-          <Button
-            variant="contained" 
-            color="error"
-            onClick={() => setOpenDeleteDialog(true)}
-          >
-            Delete
-          </Button>
-          <Stack
-            spacing={3}
-            justifyContent={"space-between"}
-            mt={2}
-            direction="row"
-          >
-            <Button
-              variant="contained"
-              color="info"
-              onClick={() => navigate(`/defects`)}
-            >
-              Back
-            </Button>
-            <Button
-              variant="contained"
-              color="info"
-              onClick={() => navigate(`/defects/edit/${id}`)}
-            >
-              Edit
-            </Button>
-          </Stack>
-        </Box>
-        <Dialog
-          open={openDeleteDialog}
-          onClose={() => setOpenDeleteDialog(false)}
-        >
-          <DialogTitle>Delete</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Are you sure you want to delete this defect?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-            <Button color="error" onClick={confirmDelete}>
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Comments
-          </Typography>
-          <TextField
-            label="Add a comment"
-            variant="outlined"
-            fullWidth
-            multiline
-            minRows={3}
-            value={comment}
-            onChange={oncommentchange}
-          />
-          <Stack spacing={2} direction="row" mt={2}>
-            <Button variant="contained" color="info" onClick={onSave}>
-              Save
-            </Button>
-            <Button variant="text" color="info" onClick={onCancel}>
-              Cancel
-            </Button>
-          </Stack>
-          <Box sx={{ mt: 3 }}>
-            {comments.map((eachComment, index) => (
-              <Paper key={index} sx={{ p: 2, mb: 2 }}>
-                <Box display="flex" alignItems="center" gap={0.5}>
-                  <Typography
-                    variant="subtitle2"
-                    fontWeight={700}
-                    sx={{ cursor: "default" }}
-                  >
-                    {eachComment.author?.displayName || "user"}
-                  </Typography>
-                  <Tooltip
-                    placement="top"
-                    title={format(new Date(eachComment.created), "PPpp")}
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: "text.secondary",
-                        cursor: "default",
-                      }}
-                    >
-                      {formatDistanceToNow(new Date(eachComment.created))} ago
-                    </Typography>
-                  </Tooltip>
-                  <IconButton
-                    size="small"
-                    onClick={(e) => handleMenuOpen(e, eachComment.id)}
-                    sx={{ padding: 0, marginLeft: "10px" }}
-                  >
-                    <MoreVertIcon fontSize="medium" />
-                  </IconButton>
-                </Box>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={menuOpen}
-                  onClose={handleMenuClose}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                >
-                  <MenuItem
-                    onClick={() => {
-                      const comment = comments.find(
-                        (c) => c.id === menuCommentId
-                      );
-                      if (comment) {
-                        setEditId(comment.id);
-                        setEditText(comment.content?.[0]?.text || "");
-                      }
-                      handleMenuClose();
-                    }}
-                  >
-                    Edit
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      if (menuCommentId) {
-                        setSelectedCommentId(menuCommentId);
-                        setOpenCommentDelete(true);
-                      }
-                      handleMenuClose();
-                    }}
-                  >
-                    Delete
-                  </MenuItem>
-                </Menu>
-                {editId === eachComment.id ? (
-                  <>
-                    <TextField
-                      fullWidth
-                      multiline
-                      minRows={2}
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                    />
-                    <Stack spacing={2} mt={2} direction="row">
-                      <Button variant="contained" color="info" onClick={onEdit}>
-                        Save
-                      </Button>
-                      <Button
-                        variant="text"
-                        color="info"
-                        onClick={() => setEditId(null)}
-                      >
-                        Cancel
-                      </Button>
-                    </Stack>
-                  </>
-                ) : (
-                  <Typography variant="body1" sx={{ mt: 1.5 }}>
-                    {eachComment.content?.[0].text}
-                  </Typography>
-                )}
-              </Paper>
-            ))}
-          </Box>
-        </Box>
-        <Dialog
-          open={openCommentDelete}
-          onClose={() => setOpenCommentDelete(false)}
-        >
-          <DialogTitle>Delete</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Are you sure you want to delete this comment?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenCommentDelete(false)}>Cancel</Button>
-            <Button
-              color="error"
-              onClick={() => {
-                if (selectedCommentId) {
-                  ondelete(selectedCommentId);
-                  setOpenCommentDelete(false);
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
+        <DefectDeatil
+          form={form}
+          id={id}
+          openDeleteDialog={openDeleteDialog}
+          setOpenDeleteDialog={setOpenDeleteDialog}
+          confirmDelete={confirmDelete}
+          navigate={navigate}
+        />
+
+        <Comments
+          comment={comment}
+          onCommentChange={onCommentChange}
+          onSave={onSave}
+          onCancel={onCancel}
+        />
+
+        <CommentList
+          comments={comments}
+          anchorEl={anchorEl}
+          menuOpen={menuOpen}
+          handleMenuOpen={handleMenuOpen}
+          handleMenuClose={handleMenuClose}
+          menuCommentId={menuCommentId}
+          editId={editId}
+          setEditId={setEditId}
+          editText={editText}
+          setEditText={setEditText}
+          onEdit={onEdit}
+          setSelectedCommentId={setSelectedCommentId}
+          setOpenCommentDelete={setOpenCommentDelete}
+          openCommentDelete={openCommentDelete}
+          ondelete={ondelete}
+          selectedCommentId={selectedCommentId}
+        />
       </Paper>
     </Container>
   );
