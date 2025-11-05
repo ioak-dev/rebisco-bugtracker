@@ -30,7 +30,7 @@ namespace rebisco_bugtracker.Api.domain.defects
             return defect;
         }
 
-        public bool Delete(string id)
+        public bool Delete(int id)
         {
             var defect = _context.Defect.Find(id);
             if (defect is null) return false;
@@ -38,6 +38,26 @@ namespace rebisco_bugtracker.Api.domain.defects
             _context.Defect.Remove(defect);
             _context.SaveChanges();
             return true;
+        }
+
+        public Defect? PartialUpdate(int id, Defect model)
+        {
+            var existingDefect = _context.Defect.Find(id);
+            if (existingDefect is null) return null;
+            var Entry = _context.Entry(existingDefect);
+            foreach (var property in typeof(Defect).GetProperties())
+            {
+                if (property.Name == nameof(Defect.Id))
+                    continue;
+
+                var newValue = property.GetValue(model);
+                if (newValue != null)
+                {
+                    property.SetValue(existingDefect, newValue);
+                }
+            } 
+            _context.SaveChanges();
+            return existingDefect;
         }
     }
 }

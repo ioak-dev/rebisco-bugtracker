@@ -43,7 +43,7 @@ namespace rebisco_bugtracker.Api
         builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminOnly", policy =>
-                policy.RequireClaim("https://dev-l44w7ox53tffwwle.us.auth0.com/roles", "ADMIN"));
+                policy.RequireClaim("https://csharp.demo.com/roles", "USER"));
         });
             builder.Services.AddControllers();
             builder.Services.AddDbContext<BugTrackerContext>(options =>

@@ -45,10 +45,21 @@ namespace rebisco_bugtracker.Api.domain.defects
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "AdminOnly")]
-        public bool Remove(string id)
+        public bool Remove(int id)
         {
             bool success = _service.Delete(id);
             return success;
+        }
+
+        [HttpPatch("{id}")]
+        public IActionResult Update(int id, [FromBody] Defect model)
+        {
+            Defect updatedDefect = _service.PartialUpdate(id, model);
+             if (updatedDefect is null)
+            {
+                return NotFound(new { message = "Defect not found" });
+            }
+            return Ok(updatedDefect);
         }
     }
 }
