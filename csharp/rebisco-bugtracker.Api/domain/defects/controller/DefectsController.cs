@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace rebisco_bugtracker.Api.domain.defects
@@ -15,6 +16,7 @@ namespace rebisco_bugtracker.Api.domain.defects
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public List<Defect> List()
         {
             List<Defect> defects = _service.GetAll();
@@ -22,9 +24,10 @@ namespace rebisco_bugtracker.Api.domain.defects
         }
 
         [HttpGet("{id}")]
-        public Defect Get(string id)
+        [Authorize]
+        public Defect Get(int id)
         {
-            Defect? defect = _service.Get(id);
+            var defect = _service.Get(id);
             if (defect is null)
             {
                 throw new Exception("Defect not found");
@@ -33,6 +36,7 @@ namespace rebisco_bugtracker.Api.domain.defects
         }
 
         [HttpPost]
+        [Authorize]
         public Defect Create([FromBody] Defect model)
         {
             Defect created = _service.Create(model);
@@ -40,6 +44,7 @@ namespace rebisco_bugtracker.Api.domain.defects
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public bool Remove(string id)
         {
             bool success = _service.Delete(id);

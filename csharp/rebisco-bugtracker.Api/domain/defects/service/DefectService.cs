@@ -13,7 +13,7 @@ namespace rebisco_bugtracker.Api.domain.defects
         public List<Defect> GetAll()
             => _context.Defect.ToList();
 
-        public Defect? Get(string id)
+        public Defect? Get(int id)
             => _context.Defect.Find(id);
 
         public Defect Create(Defect defect)
