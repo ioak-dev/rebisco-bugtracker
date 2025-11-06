@@ -8,7 +8,6 @@ import {
   Menu,
   MenuItem,
   Avatar,
-  Switch,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -17,13 +16,19 @@ import {
   Alert,
   Box,
   CircularProgress,
-  useColorScheme,//used
+  Tooltip,
+  useColorScheme,
 } from "@mui/material";
-import { AccountCircle, DarkMode, LightMode } from "@mui/icons-material";
+import {
+  AccountCircle,
+  LightMode,
+  DarkMode,
+  Laptop,
+} from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
-function NavBar() {// removed
+function NavBar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const { logout, user, isAuthenticated, loginWithRedirect } = useAuth0();
@@ -33,7 +38,17 @@ function NavBar() {// removed
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
 
-  const {mode,setMode}=useColorScheme();//
+  const { mode, setMode, systemMode } = useColorScheme();
+  console.log("current mode:", mode);
+  console.log("system mode:", systemMode);
+
+  React.useEffect(() => {
+    setMode("system");
+  }, []);
+
+  const handleChange = (newMode: "light" | "dark" | "system") => {
+    setMode(newMode);
+  };
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -126,16 +141,36 @@ function NavBar() {// removed
           </>
         )} */}
         <div>
-          {isAuthenticated ? ( 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap:0.5}}>
-                <LightMode fontSize="small" /> {/*sx={{color:mode === 'light'?'#ffeb3b':'#bdbdbd}}-----*/}
-                <Switch
-                  checked={mode === "dark"}
-                  onChange={() => setMode(mode === "light" ? "dark" : "light")}
-                  color="default"
-                />
-                <DarkMode fontSize="small" />
+          {isAuthenticated ? (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <Tooltip title="light Mode">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleChange("light")}
+                  >
+                    <LightMode fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="System Mode">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleChange("system")}
+                  >
+                    <Laptop fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Dark Mode">
+                  <IconButton size="small" onClick={() => handleChange("dark")}>
+                    <DarkMode fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               </Box>
               <IconButton
                 size="large"
