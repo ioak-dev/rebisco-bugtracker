@@ -3,10 +3,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { authorized, defectsApi } from "../api/client";
 import { useNavigate, useParams } from "react-router-dom";
 import { Container, Typography, Paper } from "@mui/material";
-
-import DefectDeatil from "./DefectDetail";
 import Comments from "./Comments";
-import CommentList from "./CommentList";
+import CommentsList from "./CommentsList";
+import DefectDetail from "./DefectDetail";
 
 export interface IComment {
   id: string;
@@ -121,7 +120,6 @@ function ViewDefectPage() {
     setComment(e.target.value);
   };
   const onSave = async () => {
-    console.log("save button clicked");
     if (comment.trim() !== "") {
       const newComment = {
         id: crypto.randomUUID(),
@@ -177,7 +175,7 @@ function ViewDefectPage() {
   return (
     <Container maxWidth="md" sx={{ mt: 3 }}>
       <Paper sx={{ p: 3 }}>
-        <DefectDeatil
+        <DefectDetail
           form={form}
           id={id}
           openDeleteDialog={openDeleteDialog}
@@ -193,7 +191,7 @@ function ViewDefectPage() {
           onCancel={onCancel}
         />
 
-        <CommentList
+        <CommentsList
           comments={comments}
           anchorEl={anchorEl}
           menuOpen={menuOpen}

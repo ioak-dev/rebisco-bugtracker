@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Button,
@@ -26,7 +27,7 @@ interface DefectDetailProps {
   navigate: (path: string) => void;
 }
 
-function DefectDeatil(props: DefectDetailProps) {
+function DefectDetail(props: DefectDetailProps) {
   const {
     form,
     id,
@@ -35,7 +36,7 @@ function DefectDeatil(props: DefectDetailProps) {
     confirmDelete,
     navigate,
   } = props;
-
+  
   return (
     <Container maxWidth="md" sx={{ mt: 3 }}>
       <Typography variant="h4" gutterBottom>
@@ -139,4 +140,4 @@ function DefectDeatil(props: DefectDetailProps) {
     </Container>
   );
 }
-export default DefectDeatil;
+export default DefectDetail;
