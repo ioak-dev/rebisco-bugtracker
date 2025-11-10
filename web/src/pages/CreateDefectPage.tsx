@@ -1,10 +1,11 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { authorized, defectsApi, mailApi } from '../api/client';
+import { authorized, defectsApi, mailApi,labelApi} from '../api/client';
 import { useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import { Box, Button, Container, MenuItem, Paper, TextField, Typography } from '@mui/material';
 import type { IDefect } from './ViewDefectPage';
+import LabelField from './LabelField';
 
 const priorities = ['Low', 'Medium', 'High', 'Critical'];
 const statuses = ['Open', 'In Progress', 'Blocked', 'Closed', 'Reopened'];
@@ -24,6 +25,8 @@ function CreateDefectPage() {
     nextCheck: '',
     remark: '',
   });
+  
+  const[labels,setLabels]=React.useState<string[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -37,8 +40,6 @@ function CreateDefectPage() {
       dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : undefined,
       nextCheck: form.nextCheck ? new Date(form.nextCheck).toISOString() : undefined,
     };
-
-    await authorized(auth0, () => defectsApi.create(payload));
     console.log(user);
     if (!user) return;
     const _mailPayload = {
@@ -47,9 +48,19 @@ function CreateDefectPage() {
       text: `A new defect has been assigned to you by ${form.raisedByTeam}.\n\nDescription: ${form.description}\n\nPlease check the defect tracking system for more details.`,
     };
     await authorized(auth0, () => mailApi.send(_mailPayload));
-    navigate('/defects');
-  };
 
+    const newDefect=await authorized(auth0,()=>defectsApi.create(payload));
+    if(labels.length>0){
+       const defectId=newDefect._id;
+      if(defectId){
+        for(const lbl of labels){
+         await authorized(auth0,()=>labelApi.create(newDefect._id,{label:lbl}));
+        }
+      }
+    }
+    navigate('/defects');
+  }; 
+   
   return (
     <Container maxWidth="sm" sx={{ mt: 4 }}>
       <Paper sx={{ p: 3 }}>
@@ -89,6 +100,9 @@ function CreateDefectPage() {
             <Grid size={12}>
               <TextField fullWidth multiline minRows={2} label="Remark" name="remark" value={form.remark} onChange={handleChange} />
             </Grid>
+             <Grid size={12}>
+              <LabelField labels={labels} setLabels={setLabels}/>
+            </Grid> 
             <Grid size={12}>
               <Box display="flex" gap={2}>
                 <Button type="submit" variant="contained">Create</Button>
