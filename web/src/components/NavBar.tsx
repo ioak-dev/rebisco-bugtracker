@@ -38,9 +38,7 @@ function NavBar() {
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
 
-  const { mode, setMode, systemMode } = useColorScheme();
-  console.log("current mode:", mode);
-  console.log("system mode:", systemMode);
+  const { setMode} = useColorScheme();
 
   React.useEffect(() => {
     setMode("system");

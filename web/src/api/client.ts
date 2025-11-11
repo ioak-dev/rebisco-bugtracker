@@ -25,3 +25,6 @@ export const defectsApi = {
 export const mailApi = {
   send: (payload: any) => api.post('/text-mail', payload).then(r => r.data),
 };
+ export const labelApi={
+  create:(id:string,payload: any)=>api.post(`/defects/${id}/labels`,payload).then((r)=>r.data),
+ };   

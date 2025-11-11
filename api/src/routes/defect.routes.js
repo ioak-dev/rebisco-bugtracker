@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Defect = require("../models/Defect");
+const Label = require("../models/Label");
 const { auth } = require("express-oauth2-jwt-bearer");
 
 const checkJwt = auth({
@@ -131,6 +132,31 @@ router.patch("/:id/comments/:commentid", checkJwt, async (req, res) => {
     comment.updated = new Date();
     await defect.save();
     res.status(200).json({ messege: "comment updated", comment });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post("/:id/labels", checkJwt, async (req, res) => {
+  try {
+    const { label } = req.body;
+    const { id } = req.params;
+
+    let existing = await Label.findOne({ label });
+    if (existing) {
+      if (!existing.defects.includes(id)) {
+        existing.defects.push(id);
+        await existing.save();
+      }
+      return res.json({ message: "label updated", label: existing });
+    }
+    const newLabel = new Label({
+      label,
+      defects: [id], 
+    });
+    await newLabel.save();
+
+    res.status(200).json({ message: "Label added", label: newLabel });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
