@@ -20,6 +20,7 @@ export const defectsApi = {
   addComment:(id:string, newComment:any)=>api.post(`/defects/${id}/comments`,{comment:newComment}).then((r)=>r.data),
   deletecomment:(id:string, commentid:string)=>api.delete(`/defects/${id}/comments/${commentid}`).then((r)=>r.data),
   updatecomment:(id:string,commentid:string,text:string)=>api.patch(`/defects/${id}/comments/${commentid}`,{text}).then(r=>r.data,),
+  search:(searchword:string)=>api.get(`defects/search/${searchword}`).then(r=>r.data),
 };
 
 export const mailApi = {
