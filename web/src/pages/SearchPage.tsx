@@ -26,6 +26,7 @@ function SearchPage() {
 
   const handleSearch = async () => {
     if (!keyword.trim()) return;
+    setSearched(true);
     setSearchParams({ keyword });
     const data = await authorized(auth0, () => defectsApi.search(keyword));
     setResults(data);
@@ -35,6 +36,7 @@ function SearchPage() {
     const urlkeyword = seachParams.get("keyword");
     if (urlkeyword) {
       setKeyword(urlkeyword);
+      setSearched(true);
       authorized(auth0, () => defectsApi.search(urlkeyword)).then((data) => {
         setResults(data);
       });
