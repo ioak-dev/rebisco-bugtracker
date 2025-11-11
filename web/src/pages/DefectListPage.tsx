@@ -20,7 +20,13 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { Delete, Edit, Add, VisibilitySharp } from "@mui/icons-material";
+import {
+  Delete,
+  Edit,
+  Add,
+  VisibilitySharp,
+  Search,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import type { IDefect } from "./ViewDefectPage";
 
@@ -56,10 +62,19 @@ function DefectListPage() {
     <Container maxWidth="xl" sx={{ mt: 3 }}>
       <Box
         display="flex"
-        justifyContent="space-between"
-        alignItems="center"
+        justifyContent="right"
+        alignItems="right"
         mb={2}
+        gap={1}
       >
+        <Typography variant="h4"></Typography>
+        <Button
+          variant="contained"
+          startIcon={<Search />}
+          onClick={() => navigate("/defects/search")}
+        >
+          Search Defect
+        </Button>
         <Typography variant="h4"></Typography>
         <Button
           variant="contained"
