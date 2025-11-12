@@ -11,23 +11,27 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  InputAdornment,
   Paper,
   Table,
   TableBody,
+  MenuItem,
   TableCell,
   TableContainer,
+  Typography,
   TableHead,
   TableRow,
-  Typography,
+  TextField,
 } from "@mui/material";
 import {
   Delete,
   Edit,
   Add,
   VisibilitySharp,
+  Clear,
   Search,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import type { IDefect } from "./ViewDefectPage";
 
 function DefectListPage() {
@@ -36,6 +40,39 @@ function DefectListPage() {
   const [rows, setRows] = React.useState<IDefect[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [toDelete, setToDelete] = React.useState<string | null>(null);
+
+  const [keyword, setKeyword] = React.useState("");
+  const [field, setField] = React.useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  React.useEffect(() => {
+    const urlKeyword = searchParams.get("keyword") || "";
+    const urlField = searchParams.get("field") || "";
+    setKeyword(urlKeyword);
+    setField(urlField);
+  }, [searchParams]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setKeyword(value);
+    setSearchParams({ field, keyword: value });
+  };
+
+  const handleCancel = async () => {
+    setKeyword("");
+    setField("");
+    setSearchParams({ field: "", keyword: "" });
+  };
+
+  const filterRows = () => {
+    if (!keyword.trim()) {
+      return rows;
+    }
+    return rows.filter((row: any) => {
+      const fieldvalue = row[field] ? row[field].toString().toLowerCase() : "";
+      return fieldvalue.includes(keyword.toLowerCase());
+    });
+  };
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -62,27 +99,67 @@ function DefectListPage() {
     <Container maxWidth="xl" sx={{ mt: 3 }}>
       <Box
         display="flex"
-        justifyContent="right"
-        alignItems="right"
-        mb={2}
-        gap={1}
+        flexWrap="wrap"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={1}
+        sx={{ gap: 1, p: 1 }}
       >
-        <Typography variant="h4"></Typography>
-        <Button
-          variant="contained"
-          startIcon={<Search />}
-          onClick={() => navigate("/defects/search")}
-        >
-          Search Defect
-        </Button>
-        <Typography variant="h4"></Typography>
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={() => navigate("/defects/new")}
-        >
-          New Defect
-        </Button>
+        <TextField
+          variant="outlined"
+          sx={{ flexGrow: 1, minWidth: "200px" }}
+          placeholder="Search defects"
+          onChange={handleInputChange}
+          value={keyword}
+          size="small"
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <IconButton>
+                    <Search color="action" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleCancel}>
+                    <Clear />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+        <Box display="flex" alignItems="center" gap={2}>
+          <TextField
+            select
+            label="Select field"
+            value={field}
+            onChange={(e) =>
+              setSearchParams({ field: e.target.value, keyword })
+            }
+            sx={{ width: 150 }}
+            size="small"
+          >
+            <MenuItem value="raisedByTeam">Raised By Team</MenuItem>
+            <MenuItem value="description">Description</MenuItem>
+            <MenuItem value="activities">Activities</MenuItem>
+            <MenuItem value="responsible">Responsible</MenuItem>
+            <MenuItem value="priority">Priority</MenuItem>
+            <MenuItem value="status">Status</MenuItem>
+            <MenuItem value="remark">Remark</MenuItem>
+            <MenuItem value="dueDate">Due Date</MenuItem>
+          </TextField>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => navigate("/defects/new")}
+            sx={{ whiteSpace: "nowrap" }}
+          >
+            New Defect
+          </Button>
+        </Box>
       </Box>
       <TableContainer component={Paper}>
         <Table size="small">
@@ -102,7 +179,7 @@ function DefectListPage() {
           </TableHead>
           <TableBody>
             {!loading &&
-              rows.map((row) => (
+              filterRows().map((row) => (
                 <TableRow key={row._id} hover>
                   <TableCell>{row.raisedByTeam}</TableCell>
                   <TableCell>{row.description}</TableCell>
@@ -136,7 +213,7 @@ function DefectListPage() {
                     </IconButton>
                     <IconButton
                       color="error"
-                      onClick={() => setToDelete(row._id?? null)}
+                      onClick={() => setToDelete(row._id ?? null)}
                     >
                       <Delete />
                     </IconButton>
@@ -146,7 +223,11 @@ function DefectListPage() {
           </TableBody>
         </Table>
       </TableContainer>
-
+      {filterRows().length === 0 && (
+        <Typography variant="h6" align="center" sx={{ mt: 4 }}>
+          No defects related to your search !
+        </Typography>
+      )}
       <Dialog open={!!toDelete} onClose={() => setToDelete(null)}>
         <DialogTitle>Delete Defect</DialogTitle>
         <DialogContent>
