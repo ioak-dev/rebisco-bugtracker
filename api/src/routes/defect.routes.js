@@ -20,11 +20,12 @@ router.get("/", checkJwt, async (req, res) => {
 router.get("/search/:keyword", checkJwt, async (req, res) => {
   try {
     const keyword = req.params.keyword;
+    const field = req.query.field;
     const results = await Defect.find(
       {
-        description: { $regex: keyword, $options: "i" },
+        [field]: { $regex: keyword, $options: "i" },
       },
-      "_id description"
+      `_id ${field}`
     );
     res.json(results);
   } catch (err) {

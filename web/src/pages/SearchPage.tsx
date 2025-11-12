@@ -8,6 +8,7 @@ import {
   Stack,
   TextField,
   Typography,
+  MenuItem,
 } from "@mui/material";
 import { authorized, defectsApi } from "../api/client";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -22,24 +23,32 @@ function SearchPage() {
   const [results, setResults] = React.useState<any[]>([]);
   const [searched, setSearched] = React.useState(false);
 
-  const [seachParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [field, setField] = React.useState("description"); //
 
   const handleSearch = async () => {
     if (!keyword.trim()) return;
     setSearched(true);
-    setSearchParams({ keyword });
-    const data = await authorized(auth0, () => defectsApi.search(keyword));
+    setSearchParams({ keyword, field }); //
+    const data = await authorized(auth0, () =>
+      defectsApi.search(keyword, field)
+    );
     setResults(data);
   };
 
   React.useEffect(() => {
-    const urlkeyword = seachParams.get("keyword");
+    const urlkeyword = searchParams.get("keyword");
+    const urlfield = searchParams.get("field") || "description";
+
     if (urlkeyword) {
       setKeyword(urlkeyword);
-      setSearched(true);
-      authorized(auth0, () => defectsApi.search(urlkeyword)).then((data) => {
-        setResults(data);
-      });
+      setField(urlfield);
+
+      authorized(auth0, () => defectsApi.search(urlkeyword, urlfield)).then(
+        (data) => {
+          setResults(data);
+        }
+      );
     }
   }, []);
 
@@ -56,12 +65,13 @@ function SearchPage() {
   };
   return (
     <Box sx={{ mt: 11, maxWidth: 700, mx: "auto" }}>
-      <Box sx={{ display: "flex", gap: 3, mt: "9" }}>
+      <Box sx={{ display: "flex", gap: 3, mt: "9", alignItems: "center" }}>
         <TextField
           fullWidth
           label="Search Defects"
           variant="outlined"
           value={keyword}
+          sx={{ width: 1200 }}
           onChange={handleInputChange}
           slotProps={{
             input: {
@@ -75,6 +85,18 @@ function SearchPage() {
             },
           }}
         />
+        <TextField
+          select
+          label="field"
+          value={field}
+          onChange={(e) => setField(e.target.value)}
+          sx={{ width: 600 }}
+        >
+          <MenuItem value="description">Description</MenuItem>
+          <MenuItem value="activities">Activities</MenuItem>
+          <MenuItem value="remark">Remark</MenuItem>
+        </TextField>
+
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"
@@ -109,8 +131,8 @@ function SearchPage() {
             }}
             onClick={() => navigate(`/defects/view/${item._id}`)}
           >
-            <Typography sx={{ fontSize: "15px", fontWeight: 500 }}>
-              {item.description}
+            <Typography sx={{ fontSize: "15px", fontWeight: 400 }}>
+              {item[field]}
             </Typography>
           </Paper>
         ))}

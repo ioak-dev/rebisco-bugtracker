@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { Auth0ContextInterface } from '@auth0/auth0-react';
 
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
@@ -20,7 +21,7 @@ export const defectsApi = {
   addComment:(id:string, newComment:any)=>api.post(`/defects/${id}/comments`,{comment:newComment}).then((r)=>r.data),
   deletecomment:(id:string, commentid:string)=>api.delete(`/defects/${id}/comments/${commentid}`).then((r)=>r.data),
   updatecomment:(id:string,commentid:string,text:string)=>api.patch(`/defects/${id}/comments/${commentid}`,{text}).then(r=>r.data,),
-  search:(searchword:string)=>api.get(`defects/search/${searchword}`).then(r=>r.data),
+  search:(searchword:string,field:string)=>api.get(`/defects/search/${searchword}?field=${field}`).then((r)=>r.data),
 };
 
 export const mailApi = {
