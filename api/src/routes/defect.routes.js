@@ -17,20 +17,6 @@ router.get("/", checkJwt, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-router.get("/search/:keyword", checkJwt, async (req, res) => {
-  try {
-    const keyword = req.params.keyword;
-    const results = await Defect.find(
-      {
-        description: { $regex: keyword, $options: "i" },
-      },
-      "_id description"
-    );
-    res.json(results);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
 
 router.get("/:id", checkJwt, async (req, res) => {
   try {
