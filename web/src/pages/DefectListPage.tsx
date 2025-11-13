@@ -22,6 +22,8 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Checkbox,
+  ListItemText,
 } from "@mui/material";
 import {
   Delete,
@@ -42,36 +44,47 @@ function DefectListPage() {
   const [toDelete, setToDelete] = React.useState<string | null>(null);
 
   const [keyword, setKeyword] = React.useState("");
-  const [field, setField] = React.useState("");
+  const [fields, setFields] = React.useState<string[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
 
   React.useEffect(() => {
     const urlKeyword = searchParams.get("keyword") || "";
-    const urlField = searchParams.get("field") || "";
+    const urlFields = searchParams.get("fields") || "";
     setKeyword(urlKeyword);
-    setField(urlField);
+    if (urlFields) {
+      setFields(urlFields.split(","));
+    } else {
+      setFields([]);
+    }
   }, [searchParams]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setKeyword(value);
-    setSearchParams({ field, keyword: value });
+    setSearchParams({ fields: fields.join(","), keyword: value });
   };
 
-  const handleCancel = async () => {
+  const handleFieldChange = (e: any) => {
+    const newfield = e.target.value;
+    setFields(newfield);
+    setSearchParams({ fields: newfield.join(","), keyword });
+  };
+
+  const handleCancel = () => {
     setKeyword("");
-    setField("");
-    setSearchParams({ field: "", keyword: "" });
+    setFields([]);
+    setSearchParams({});
   };
-
   const filterRows = () => {
-    if (!keyword.trim()) {
-      return rows;
-    }
-    return rows.filter((row: any) => {
-      const fieldvalue = row[field] ? row[field].toString().toLowerCase() : "";
-      return fieldvalue.includes(keyword.toLowerCase());
-    });
+    if (!keyword.trim() || fields.length === 0) return rows;
+    return rows.filter((row: any) =>
+      fields.some((field) => {
+        const fieldvalue = row[field]
+          ? row[field].toString().toLowerCase()
+          : "";
+        return fieldvalue.includes(keyword.toLowerCase());
+      })
+    );
   };
 
   const load = React.useCallback(async () => {
@@ -116,15 +129,13 @@ function DefectListPage() {
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <IconButton>
-                    <Search color="action" />
-                  </IconButton>
+                  <Search color="action" />
                 </InputAdornment>
               ),
-              endAdornment: (
+              endAdornment: keyword && (
                 <InputAdornment position="end">
                   <IconButton onClick={handleCancel}>
-                    <Clear />
+                    <Clear color="action" />
                   </IconButton>
                 </InputAdornment>
               ),
@@ -134,22 +145,59 @@ function DefectListPage() {
         <Box display="flex" alignItems="center" gap={2}>
           <TextField
             select
-            label="Select field"
-            value={field}
-            onChange={(e) =>
-              setSearchParams({ field: e.target.value, keyword })
-            }
-            sx={{ width: 150 }}
+            label="Select fields"
             size="small"
+            sx={{ width: 200 }}
+            value={fields}
+            onChange={handleFieldChange}
+            slotProps={{
+              select: {
+                multiple: true,
+                displayEmpty: true,
+                renderValue: (selected) => {
+                  if ((selected as string[]).length === 0) return;
+                  return (selected as string[]).join(",");
+                },
+                MenuProps: { PaperProps: { sx: { maxHeight: 300 } } },
+              },
+            }}
           >
-            <MenuItem value="raisedByTeam">Raised By Team</MenuItem>
-            <MenuItem value="description">Description</MenuItem>
-            <MenuItem value="activities">Activities</MenuItem>
-            <MenuItem value="responsible">Responsible</MenuItem>
-            <MenuItem value="priority">Priority</MenuItem>
-            <MenuItem value="status">Status</MenuItem>
-            <MenuItem value="remark">Remark</MenuItem>
-            <MenuItem value="dueDate">Due Date</MenuItem>
+            <MenuItem value="raisedByTeam">
+              <Checkbox checked={fields.includes("raisedByTeam")} />
+              <ListItemText primary="raised By Team" />
+            </MenuItem>
+            <MenuItem value="description">
+              <Checkbox checked={fields.includes("description")} />
+              <ListItemText primary="Description" />
+            </MenuItem>
+            <MenuItem value="activities">
+              <Checkbox checked={fields.includes("activities")} />
+              <ListItemText primary="activities" />
+            </MenuItem>
+            <MenuItem value="responsible">
+              <Checkbox checked={fields.includes("responsible")} />
+              <ListItemText primary="responsible" />
+            </MenuItem>
+            <MenuItem value="priority">
+              <Checkbox checked={fields.includes("priority")} />
+              <ListItemText primary="priority" />
+            </MenuItem>
+            <MenuItem value="status">
+              <Checkbox checked={fields.includes("status")} />
+              <ListItemText primary="status" />
+            </MenuItem>
+            <MenuItem value="remark">
+              <Checkbox checked={fields.includes("remark")} />
+              <ListItemText primary="remark" />
+            </MenuItem>
+            <MenuItem value="dueDate">
+              <Checkbox checked={fields.includes("dueDate")} />
+              <ListItemText primary="dueDate" />
+            </MenuItem>
+            <MenuItem value="nextCheck">
+              <Checkbox checked={fields.includes("nextCheck")} />
+              <ListItemText primary="nextCheck" />
+            </MenuItem>
           </TextField>
           <Button
             variant="contained"
