@@ -9,7 +9,7 @@ import EditDefectPage from './pages/EditDefectPage';
 import UserListPage from './pages/UserListPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ViewDefectPage from './pages/ViewDefectPage';
-import SearchPage from './pages/SearchPage';
+
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -37,7 +37,7 @@ function App() {
           <Route path="/defects/edit/:id" element={<ProtectedRoute component={EditDefectPage} />} />
           <Route path="/users" element={<ProtectedRoute component={UserListPage} />} />
           <Route path="/defects/view/:id" element={<ProtectedRoute component={ViewDefectPage} />} />
-          <Route path="/defects/search/" element={<ProtectedRoute component={SearchPage}/>}/>
+          
    
         </Routes>
       </main>
