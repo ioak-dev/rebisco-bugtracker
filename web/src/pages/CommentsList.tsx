@@ -13,6 +13,8 @@ interface CommentsListProps {
   onEdit: () => void;
   setEditId: React.Dispatch<React.SetStateAction<string | null>>;
   setEditText: React.Dispatch<React.SetStateAction<string>>;
+  setComments: React.Dispatch<React.SetStateAction<IComment[]>>;
+
 }
 
 function CommentsList(props: CommentsListProps) {
@@ -24,6 +26,7 @@ function CommentsList(props: CommentsListProps) {
     onEdit,
     setEditId,
     setEditText,
+     setComments,
   } = props;
 
   return (
@@ -39,6 +42,7 @@ function CommentsList(props: CommentsListProps) {
             editId={editId}
             editText={editText}
             onEdit={onEdit}
+            setComments={setComments}
           />
         ))}        
       </Box>

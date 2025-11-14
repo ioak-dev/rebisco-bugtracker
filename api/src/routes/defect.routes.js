@@ -136,6 +136,17 @@ router.patch("/:id/comments/:commentid", checkJwt, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+router.get("/:id/comments", checkJwt, async (req, res) => {
+  try {
+    const defect = await Defect.findById(req.params.id);
+    if (!defect) {
+      return res.status(404).json({ messege: "defect not found" });
+    }
+    res.json(defect.comments || []);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 router.post("/:id/labels", checkJwt, async (req, res) => {
   try {

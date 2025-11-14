@@ -17,7 +17,6 @@ function ViewDefectPage() {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [comment, setComment] = React.useState("");
   const [comments, setComments] = React.useState<IComment[]>([]);
-
   const [editId, setEditId] = React.useState<string | null>(null);
   const [editText, setEditText] = React.useState("");
 
@@ -101,7 +100,7 @@ function ViewDefectPage() {
   const onEdit = () => {
     if (!defectId || !editId) return;
     authorized(auth0, () =>
-      defectsApi.updatecomment(defectId, editId, editText)
+      defectsApi.updateComment(defectId, editId, editText)
     );
     setComments((prev) =>
       prev.map((c) =>
@@ -153,6 +152,7 @@ function ViewDefectPage() {
           editText={editText}
           setEditText={setEditText}
           onEdit={onEdit}
+          setComments={setComments}
         />
       </Paper>
     </Container>

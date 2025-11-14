@@ -30,6 +30,7 @@ interface CommentItemProps {
   onEdit: () => void;
   setEditId: React.Dispatch<React.SetStateAction<string | null>>;
   setEditText: React.Dispatch<React.SetStateAction<string>>;
+  setComments: React.Dispatch<React.SetStateAction<IComment[]>>;
 }
 
 function CommentItem(props: CommentItemProps) {
@@ -41,6 +42,7 @@ function CommentItem(props: CommentItemProps) {
     editId,
     editText,
     onEdit,
+    setComments,
   } = props;
   const auth0 = useAuth0();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -59,7 +61,11 @@ function CommentItem(props: CommentItemProps) {
     await authorized(auth0, () =>
       defectsApi.deleteComment(defectId, comment.id)
     );
-    // setComments(comments.filter((each) => each.id !== commentid));
+
+    const updated = await authorized(auth0, () =>
+      defectsApi.getComments(defectId)
+    );
+    setComments(updated);
   };
 
   return (
