@@ -18,10 +18,10 @@ export const defectsApi = {
   create: (payload: any) => api.post('/defects', payload).then(r => r.data),
   update: (id: string, payload: any) => api.patch(`/defects/${id}`, payload).then(r => r.data),
   remove: (id: string) => api.delete(`/defects/${id}`).then(r => r.data),
-  addComment:(id:string, newComment:any)=>api.post(`/defects/${id}/comments`,{comment:newComment}).then((r)=>r.data),
-  deleteComment:(id:string, commentid:string)=>api.delete(`/defects/${id}/comments/${commentid}`).then((r)=>r.data),
-  updateComment:(id:string,commentid:string,text:string)=>api.patch(`/defects/${id}/comments/${commentid}`,{text}).then(r=>r.data,),
-  getComments:(id:string)=>api.get(`/defects/${id}/comments`).then(r =>r.data),
+  addComment:(defectId:string, newComment:any)=>api.post(`/defects/${defectId}/comments`,{comment:newComment}).then((r)=>r.data),
+  deleteComment:(defectId:string, commentid:string)=>api.delete(`/defects/${defectId}/comments/${commentid}`).then((r)=>r.data),
+  updateComment:(defectId:string,commentid:string,text:string)=>api.patch(`/defects/${defectId}/comments/${commentid}`,{text}).then(r=>r.data,),
+  getCommentsByDefectId:(defectId:string)=>api.get(`/defects/${defectId}/comments`).then(r =>r.data),
   search:(searchWord:string,field:string)=>api.get(`/defects/search/${searchWord}?field=${field}`).then((r)=>r.data),
 };
 

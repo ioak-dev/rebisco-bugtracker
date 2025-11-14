@@ -17,8 +17,6 @@ function ViewDefectPage() {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [comment, setComment] = React.useState("");
   const [comments, setComments] = React.useState<IComment[]>([]);
-  const [editId, setEditId] = React.useState<string | null>(null);
-  const [editText, setEditText] = React.useState("");
 
   React.useEffect(() => {
     (async () => {
@@ -97,25 +95,6 @@ function ViewDefectPage() {
   const onCancel = () => {
     setComment("");
   };
-  const onEdit = () => {
-    if (!defectId || !editId) return;
-    authorized(auth0, () =>
-      defectsApi.updateComment(defectId, editId, editText)
-    );
-    setComments((prev) =>
-      prev.map((c) =>
-        c.id === editId
-          ? {
-              ...c,
-              content: [{ type: "text", text: editText }],
-              updated: new Date(),
-            }
-          : c
-      )
-    );
-    setEditId(null);
-    setEditText("");
-  };
 
   return (
     <Container maxWidth="md" sx={{ mt: 3 }}>
@@ -147,11 +126,6 @@ function ViewDefectPage() {
         <CommentsList
           defectId={defectId || null}
           comments={comments}
-          editId={editId}
-          setEditId={setEditId}
-          editText={editText}
-          setEditText={setEditText}
-          onEdit={onEdit}
           setComments={setComments}
         />
       </Paper>

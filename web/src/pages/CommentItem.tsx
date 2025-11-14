@@ -25,30 +25,18 @@ import { useAuth0 } from "@auth0/auth0-react";
 interface CommentItemProps {
   defectId: string | null;
   comment: IComment;
-  editId: string | null;
-  editText: string;
-  onEdit: () => void;
-  setEditId: React.Dispatch<React.SetStateAction<string | null>>;
-  setEditText: React.Dispatch<React.SetStateAction<string>>;
   setComments: React.Dispatch<React.SetStateAction<IComment[]>>;
 }
 
 function CommentItem(props: CommentItemProps) {
-  const {
-    defectId,
-    comment,
-    setEditId,
-    setEditText,
-    editId,
-    editText,
-    onEdit,
-    setComments,
-  } = props;
+  const { defectId, comment, setComments } = props;
   const auth0 = useAuth0();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
   const [openCommentDeleteDialog, setOpenCommentDeleteDialog] =
     React.useState(false);
+  const [editId, setEditId] = React.useState<string | null>(null);
+  const [editText, setEditText] = React.useState("");
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -63,11 +51,22 @@ function CommentItem(props: CommentItemProps) {
     );
 
     const updated = await authorized(auth0, () =>
-      defectsApi.getComments(defectId)
+      defectsApi.getCommentsByDefectId(defectId)
     );
     setComments(updated);
   };
-
+  const onEdit = async () => {
+    if (!defectId || !editId) return;
+    authorized(auth0, () =>
+      defectsApi.updateComment(defectId, editId, editText)
+    );
+    const updated = await authorized(auth0, () =>
+      defectsApi.getCommentsByDefectId(defectId)
+    );
+    setComments(updated);
+    setEditId(null);
+    setEditText("");
+  };
   return (
     <>
       <Paper sx={{ p: 2, mb: 2 }}>
