@@ -1,53 +1,29 @@
 import {
   Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
   Container,
-  DialogTitle,
 } from "@mui/material";
-import type { IComment } from "./ViewDefectPage";
+import type { IComment } from "../interface/IComment.interface";
 import CommentItem from "./CommentItem";
 
 interface CommentsListProps {
+  defectId: string | null;
   comments: IComment[];
-  anchorEl: HTMLElement | null;
-  menuOpen: boolean;
-  handleMenuOpen: (e: React.MouseEvent<HTMLElement>, id: string) => void;
-  handleMenuClose: () => void;
-  menuCommentId: string | null;
   editId: string | null;
   editText: string;
   onEdit: () => void;
   setEditId: React.Dispatch<React.SetStateAction<string | null>>;
   setEditText: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedCommentId: React.Dispatch<React.SetStateAction<string | null>>;
-  setOpenCommentDelete: React.Dispatch<React.SetStateAction<boolean>>;
-  openCommentDelete: boolean;
-  ondelete: (id: string) => void;
-  selectedCommentId: string | null;
 }
 
 function CommentsList(props: CommentsListProps) {
   const {
+    defectId,
     comments,
-    anchorEl,
-    menuOpen,
-    handleMenuOpen,
-    handleMenuClose,
-    menuCommentId,
     editId,
     editText,
     onEdit,
     setEditId,
     setEditText,
-    setSelectedCommentId,
-    setOpenCommentDelete,
-    openCommentDelete,
-    ondelete,
-    selectedCommentId,
   } = props;
 
   return (
@@ -55,48 +31,16 @@ function CommentsList(props: CommentsListProps) {
       <Box sx={{ mt: 1 }}>
         {comments.map((eachComment, index) => (
           <CommentItem
+            defectId={defectId}
             key={index}
-            eachComment={eachComment}
-            anchorEl={anchorEl}
-            menuOpen={menuOpen}
-            menuCommentId={menuCommentId}
-            handleMenuClose={handleMenuClose}
-            handleMenuOpen={handleMenuOpen}
+            comment={eachComment}
             setEditId={setEditId}
             setEditText={setEditText}
-            setSelectedCommentId={setSelectedCommentId}
-            setOpenCommentDelete={setOpenCommentDelete}
             editId={editId}
             editText={editText}
             onEdit={onEdit}
           />
-        ))}
-
-        <Dialog
-          open={openCommentDelete}
-          onClose={() => setOpenCommentDelete(false)}
-        >
-          <DialogTitle>Delete</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Are you sure you want to delete this comment?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenCommentDelete(false)}>Cancel</Button>
-            <Button
-              color="error"
-              onClick={() => {
-                if (selectedCommentId) {
-                  ondelete(selectedCommentId);
-                  setOpenCommentDelete(false);
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
+        ))}        
       </Box>
     </Container>
   );
