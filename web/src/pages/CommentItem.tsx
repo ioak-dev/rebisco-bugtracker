@@ -57,7 +57,7 @@ function CommentItem(props: CommentItemProps) {
   };
   const onEdit = async () => {
     if (!defectId || !editId) return;
-    authorized(auth0, () =>
+     await authorized(auth0, () =>
       defectsApi.updateComment(defectId, editId, editText)
     );
     const updated = await authorized(auth0, () =>
