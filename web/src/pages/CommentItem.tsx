@@ -1,4 +1,3 @@
-//each comment
 import React from "react";
 import {
   Box,
@@ -57,7 +56,7 @@ function CommentItem(props: CommentItemProps) {
   };
   const onEdit = async () => {
     if (!defectId || !editId) return;
-     await authorized(auth0, () =>
+    await authorized(auth0, () =>
       defectsApi.updateComment(defectId, editId, editText)
     );
     const updated = await authorized(auth0, () =>
@@ -67,6 +66,7 @@ function CommentItem(props: CommentItemProps) {
     setEditId(null);
     setEditText("");
   };
+  
   return (
     <>
       <Paper sx={{ p: 2, mb: 2 }}>

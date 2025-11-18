@@ -37,8 +37,7 @@ function NavBar() {
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
-
-  const { setMode} = useColorScheme();
+  const { setMode } = useColorScheme();
 
   React.useEffect(() => {
     setMode("system");
@@ -148,7 +147,7 @@ function NavBar() {
                   gap: 1,
                 }}
               >
-                <Tooltip title="light Mode">
+                <Tooltip title="Light Mode">
                   <IconButton
                     size="small"
                     onClick={() => handleChange("light")}
