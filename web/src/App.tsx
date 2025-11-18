@@ -36,7 +36,7 @@ function App() {
           <Route path="/defects/new" element={<ProtectedRoute component={CreateDefectPage} />} />
           <Route path="/defects/edit/:id" element={<ProtectedRoute component={EditDefectPage} />} />
           <Route path="/users" element={<ProtectedRoute component={UserListPage} />} />
-          <Route path="/defects/view/:id" element={<ProtectedRoute component={ViewDefectPage} />} />
+          <Route path="/defects/view/:defectId" element={<ProtectedRoute component={ViewDefectPage} />} />
           
    
         </Routes>

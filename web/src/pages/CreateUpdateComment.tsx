@@ -2,11 +2,11 @@ import React from "react";
 import { Box, Button, TextField, Stack } from "@mui/material";
 
 interface CreateUpdateCommentProps {
-  label?: string; // add comment,editcomment
+  label?: string; 
   value: string;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void; //typing
+  ) => void; 
   onSave: () => void;
   onCancel: () => void;
 }

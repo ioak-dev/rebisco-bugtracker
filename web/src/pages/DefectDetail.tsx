@@ -16,7 +16,7 @@ import {
   Dialog,
   Stack,
 } from "@mui/material";
-import type { IDefect } from "./ViewDefectPage";
+import type { IDefect } from "../interface/IDefect.interface";
 
 interface DefectDetailProps {
   form: IDefect;

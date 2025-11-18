@@ -34,7 +34,7 @@ import {
   Search,
 } from "@mui/icons-material";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import type { IDefect } from "./ViewDefectPage";
+import type { IDefect } from "../interface/IDefect.interface";
 
 function DefectListPage() {
   const auth0 = useAuth0();

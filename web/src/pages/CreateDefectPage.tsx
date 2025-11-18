@@ -4,8 +4,8 @@ import { authorized, defectsApi, mailApi,labelApi} from '../api/client';
 import { useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import { Box, Button, Container, MenuItem, Paper, TextField, Typography } from '@mui/material';
-import type { IDefect } from './ViewDefectPage';
 import LabelField from './LabelField';
+import type { IDefect } from '../interface/IDefect.interface';
 
 const priorities = ['Low', 'Medium', 'High', 'Critical'];
 const statuses = ['Open', 'In Progress', 'Blocked', 'Closed', 'Reopened'];
