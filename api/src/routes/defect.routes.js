@@ -91,7 +91,7 @@ router.delete("/:id", checkJwt, async (req, res) => {
 });
 router.post("/:id/comments", checkJwt, async (req, res) => {
   try {
-    const newcomment = req.body.comment;
+    const newComment = req.body.comment;
     const defect = await Defect.findById(req.params.id);
     if (!defect) {
       return res.status(404).json({ message: "Defect not found" });
@@ -99,39 +99,39 @@ router.post("/:id/comments", checkJwt, async (req, res) => {
     if (!defect.comments) {
       defect.comments = [];
     }
-    defect.comments.push(newcomment);
+    defect.comments.push(newComment);
     await defect.save();
-    res.status(200).json({ message: "comment added", comment: newcomment });
+    res.status(200).json({ message: "comment added", comment: newComment });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
-router.delete("/:id/comments/:commentid", checkJwt, async (req, res) => {
+router.delete("/:id/comments/:commentId", checkJwt, async (req, res) => {
   try {
-    const { id, commentid } = req.params;
+    const { id, commentId } = req.params;
     const defect = await Defect.findById(id);
-    if (!defect) return res.status(404).json({ messege: "defect not found" });
-    defect.comments = defect.comments.filter((c) => c.id !== commentid);
+    if (!defect) return res.status(404).json({ message: "Defect not found" });
+    defect.comments = defect.comments.filter((c) => c.id !== commentId);
     await defect.save();
-    res.status(200).json({ messege: "comment deleted" });
+    res.status(200).json({ message: "Comment deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
-router.patch("/:id/comments/:commentid", checkJwt, async (req, res) => {
+router.patch("/:id/comments/:commentId", checkJwt, async (req, res) => {
   try {
     const defect = await Defect.findById(req.params.id);
     if (!defect) {
-      return res.status(404).json({ messege: "defect not found" });
+      return res.status(404).json({ message: "Defect not found" });
     }
-    const comment = defect.comments.find((c) => c.id === req.params.commentid);
+    const comment = defect.comments.find((c) => c.id === req.params.commentId);
     if (!comment) {
-      return res.status(404).json({ message: "comment not found" });
+      return res.status(404).json({ message: "Comment not found" });
     }
     comment.content[0].text = req.body.text;
     comment.updated = new Date();
     await defect.save();
-    res.status(200).json({ messege: "comment updated", comment });
+    res.status(200).json({ message: "Comment updated", comment });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -140,7 +140,7 @@ router.get("/:id/comments", checkJwt, async (req, res) => {
   try {
     const defect = await Defect.findById(req.params.id);
     if (!defect) {
-      return res.status(404).json({ messege: "defect not found" });
+      return res.status(404).json({ message: "Defect not found" });
     }
     res.json(defect.comments || []);
   } catch (err) {
@@ -159,15 +159,14 @@ router.post("/:id/labels", checkJwt, async (req, res) => {
         existing.defects.push(id);
         await existing.save();
       }
-      return res.json({ message: "label updated", label: existing });
+      return res.json({ message: "Label updated", label: existing });
     }
     const newLabel = new Label({
       label,
       defects: [id],
     });
     await newLabel.save();
-
-    res.status(200).json({ message: "Label added", label: newLabel });
+    return res.status(200).json({ message: "Label added", label: newLabel });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

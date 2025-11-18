@@ -10,7 +10,6 @@ import UserListPage from './pages/UserListPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ViewDefectPage from './pages/ViewDefectPage';
 
-
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
@@ -37,8 +36,6 @@ function App() {
           <Route path="/defects/edit/:id" element={<ProtectedRoute component={EditDefectPage} />} />
           <Route path="/users" element={<ProtectedRoute component={UserListPage} />} />
           <Route path="/defects/view/:defectId" element={<ProtectedRoute component={ViewDefectPage} />} />
-          
-   
         </Routes>
       </main>
     </div>

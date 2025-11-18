@@ -65,9 +65,9 @@ function DefectListPage() {
   };
 
   const handleFieldChange = (e: any) => {
-    const newfield = e.target.value;
-    setFields(newfield);
-    setSearchParams({ fields: newfield.join(","), keyword });
+    const newField = e.target.value;
+    setFields(newField);
+    setSearchParams({ fields: newField.join(","), keyword });
   };
 
   const handleCancel = () => {
@@ -79,10 +79,10 @@ function DefectListPage() {
     if (!keyword.trim() || fields.length === 0) return rows;
     return rows.filter((row: any) =>
       fields.some((field) => {
-        const fieldvalue = row[field]
+        const fieldValue = row[field]
           ? row[field].toString().toLowerCase()
           : "";
-        return fieldvalue.includes(keyword.toLowerCase());
+        return fieldValue.includes(keyword.toLowerCase());
       })
     );
   };
@@ -121,7 +121,7 @@ function DefectListPage() {
         <TextField
           variant="outlined"
           sx={{ flexGrow: 1, minWidth: "200px" }}
-          placeholder="Search defects"
+          placeholder="Search Defects"
           onChange={handleInputChange}
           value={keyword}
           size="small"
@@ -132,7 +132,7 @@ function DefectListPage() {
                   <Search color="action" />
                 </InputAdornment>
               ),
-              endAdornment: keyword && (
+              endAdornment:(
                 <InputAdornment position="end">
                   <IconButton onClick={handleCancel}>
                     <Clear color="action" />
@@ -158,13 +158,13 @@ function DefectListPage() {
                   if ((selected as string[]).length === 0) return;
                   return (selected as string[]).join(",");
                 },
-                MenuProps: { PaperProps: { sx: { maxHeight: 300 } } },
+                MenuProps: { PaperProps: { sx: { maxHeight: 280 } } },
               },
             }}
           >
             <MenuItem value="raisedByTeam">
               <Checkbox checked={fields.includes("raisedByTeam")} />
-              <ListItemText primary="raised By Team" />
+              <ListItemText primary="Raised by Team" />
             </MenuItem>
             <MenuItem value="description">
               <Checkbox checked={fields.includes("description")} />
@@ -172,31 +172,31 @@ function DefectListPage() {
             </MenuItem>
             <MenuItem value="activities">
               <Checkbox checked={fields.includes("activities")} />
-              <ListItemText primary="activities" />
+              <ListItemText primary="Activities" />
             </MenuItem>
             <MenuItem value="responsible">
               <Checkbox checked={fields.includes("responsible")} />
-              <ListItemText primary="responsible" />
+              <ListItemText primary="Responsible" />
             </MenuItem>
             <MenuItem value="priority">
               <Checkbox checked={fields.includes("priority")} />
-              <ListItemText primary="priority" />
+              <ListItemText primary="Priority" />
             </MenuItem>
             <MenuItem value="status">
               <Checkbox checked={fields.includes("status")} />
-              <ListItemText primary="status" />
+              <ListItemText primary="Status" />
             </MenuItem>
             <MenuItem value="remark">
               <Checkbox checked={fields.includes("remark")} />
-              <ListItemText primary="remark" />
+              <ListItemText primary="Remark" />
             </MenuItem>
             <MenuItem value="dueDate">
               <Checkbox checked={fields.includes("dueDate")} />
-              <ListItemText primary="dueDate" />
+              <ListItemText primary="DueDate" />
             </MenuItem>
             <MenuItem value="nextCheck">
               <Checkbox checked={fields.includes("nextCheck")} />
-              <ListItemText primary="nextCheck" />
+              <ListItemText primary="NextCheck" />
             </MenuItem>
           </TextField>
           <Button
@@ -273,7 +273,7 @@ function DefectListPage() {
       </TableContainer>
       {filterRows().length === 0 && (
         <Typography variant="h6" align="center" sx={{ mt: 4 }}>
-          No defects related to your search !
+          No defects match your search!
         </Typography>
       )}
       <Dialog open={!!toDelete} onClose={() => setToDelete(null)}>

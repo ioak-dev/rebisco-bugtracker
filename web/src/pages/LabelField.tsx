@@ -1,19 +1,18 @@
 import React from "react";
 import { TextField, Chip, Box, Stack } from "@mui/material";
 
-
-interface labelFieldProps {
+interface LabelFieldProps {
   labels: string[];
   setLabels: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-function LabelField({ labels, setLabels }: labelFieldProps) {
+function LabelField({ labels, setLabels }: LabelFieldProps) {
   const [value, setValue] = React.useState("");
 
   const addLabel = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if ((e.key === "Enter" || e.key === ",") && value.trim()) {
       e.preventDefault();
-      const newLabel=value.trim();
+      const newLabel = value.trim();
       setLabels([...labels, newLabel]);
       setValue("");
     }
