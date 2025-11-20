@@ -1,7 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-  AppBar,
-  Toolbar,
   Typography,
   Button,
   IconButton,
@@ -15,15 +13,19 @@ import {
   TextField,
   Alert,
   Box,
+  Drawer,
   CircularProgress,
   Tooltip,
   useColorScheme,
+  Stack,
 } from "@mui/material";
 import {
   AccountCircle,
   LightMode,
   DarkMode,
   Laptop,
+  ChevronLeft,
+  ChevronRight,
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -38,6 +40,8 @@ function NavBar() {
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
   const { setMode } = useColorScheme();
+
+  const [collapsed, setCollapsed] = useState(false);
 
   React.useEffect(() => {
     setMode("system");
@@ -107,26 +111,65 @@ function NavBar() {
   };
 
   return (
-    <AppBar position="static" elevation={0}>
-      <Toolbar sx={{ minHeight: 72 }}>
+    <Box
+      sx={{
+        display: "flex",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: collapsed ? "60px" : "120px",
+        transition: "margin-left 0.25s ease",
+      }}
+    >
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: collapsed ? 60 : 120,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: collapsed ? 60 : 120,
+            transition: "width 0.25s ease",
+            overflowX: "hidden",
+            boxSizing: "border-box",
+            p: 1,
+            bgcolor: "#EB2A2E",
+            color: "white",
+          },
+        }}
+      >
         <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{ mr: 2 }}
-          component={Link}
-          to="/"
+          onClick={() => setCollapsed(!collapsed)}
+          sx={{ color: "white", alignSelf: "flex-end", mb: 1 }}
         >
-          <img
-            src="https://www.rebisco.com.ph/img/cll-vanillacloud-logo-1614649609.jpg"
-            alt="Logo"
-            style={{ height: 28 }}
-          />
+          {collapsed ? (
+            <Tooltip title="Expand sidebar">
+              <ChevronRight />
+            </Tooltip>
+          ) : (
+            <Tooltip title="Collapse sidebar">
+              <ChevronLeft />
+            </Tooltip>
+          )}
         </IconButton>
-        <Typography variant="body2" component="div" sx={{ flexGrow: 1 }}>
-          Bug Tracker
-        </Typography>
+        <Box sx={{ mb: 2 }}></Box>
+        {!collapsed && (
+          <IconButton component={Link} to="/" sx={{ p: 1, mb: 1 }}>
+            <img
+              src="https://www.rebisco.com.ph/img/cll-vanillacloud-logo-1614649609.jpg"
+              alt="Logo"
+              style={{ height: 28 }}
+            />
+          </IconButton>
+        )}
+        {!collapsed && (
+          <Typography
+            variant="body2"
+            sx={{ textAlign: "center", mb: 3, flexGrow: 3 }}
+          >
+            Bug Tracker
+          </Typography>
+        )}
+        <Box sx={{ flexGrow: 1 }} />
         {/* {isAuthenticated && (
           <>
             <Button color="inherit" component={Link} to="/defects">
@@ -137,42 +180,41 @@ function NavBar() {
             </Button>
           </>
         )} */}
-        <div>
+        <Stack spacing={2} sx={{ mb: 2, alignItems: "center" }}>
+          <Tooltip title="Light Mode" placement="left">
+            <IconButton
+              size="medium"
+              onClick={() => handleChange("light")}
+              sx={{ p: 0.75 }}
+            >
+              <LightMode fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="System Mode" placement="left">
+            <IconButton
+              size="medium"
+              onClick={() => handleChange("system")}
+              sx={{ p: 0.75 }}
+            >
+              <Laptop fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Dark Mode" placement="left">
+            <IconButton
+              size="medium"
+              onClick={() => handleChange("dark")}
+              sx={{ p: 0.75 }}
+            >
+              <DarkMode fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+        <Box sx={{ display: "flex", mt: "auto", justifyContent: "center" }}>
           {isAuthenticated ? (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                }}
-              >
-                <Tooltip title="Light Mode">
-                  <IconButton
-                    size="small"
-                    onClick={() => handleChange("light")}
-                  >
-                    <LightMode fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="System Mode">
-                  <IconButton
-                    size="small"
-                    onClick={() => handleChange("system")}
-                  >
-                    <Laptop fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Dark Mode">
-                  <IconButton size="small" onClick={() => handleChange("dark")}>
-                    <DarkMode fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
+            <>
               <IconButton
                 size="large"
                 aria-label="account of current user"
-                aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleMenu}
                 color="inherit"
@@ -195,16 +237,15 @@ function NavBar() {
                 )}
               </IconButton>
               <Menu
-                id="menu-appbar"
                 anchorEl={anchorEl}
                 anchorOrigin={{
                   vertical: "top",
-                  horizontal: "right",
+                  horizontal: "left",
                 }}
                 keepMounted
                 transformOrigin={{
                   vertical: "top",
-                  horizontal: "right",
+                  horizontal: "left",
                 }}
                 open={open}
                 onClose={handleClose}
@@ -214,15 +255,16 @@ function NavBar() {
                   Change Password
                 </MenuItem>
               </Menu>
-            </Box>
+            </>
           ) : (
             <Button color="inherit" onClick={() => loginWithRedirect()}>
               Login
             </Button>
           )}
-        </div>
-      </Toolbar>
+        </Box>
+      </Drawer>
 
+      <Box sx={{ flexGrow: 1 }}></Box>
       <Dialog
         open={changePwdOpen}
         onClose={() => setChangePwdOpen(false)}
@@ -272,7 +314,7 @@ function NavBar() {
           </Button>
         </DialogActions>
       </Dialog>
-    </AppBar>
+    </Box>
   );
 }
 
