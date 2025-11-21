@@ -23,12 +23,12 @@ function LabelField({ labels, setLabels }: LabelFieldProps) {
   };
 
   return (
-    <Box mt={1} sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%" }}>
       <TextField
         label="Add label"
         placeholder="Add label and Enter"
-        variant="outlined"
         fullWidth
+        variant="outlined"
         value={value}
         onKeyDown={addLabel}
         onChange={(e) => setValue(e.target.value)}
