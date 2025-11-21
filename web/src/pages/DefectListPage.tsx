@@ -116,7 +116,7 @@ function DefectListPage() {
         alignItems="center"
         justifyContent="space-between"
         mb={1}
-        sx={{ gap: 1, p: 1 }}
+        sx={{ gap: 1, py: 1 }}
       >
         <TextField
           variant="outlined"

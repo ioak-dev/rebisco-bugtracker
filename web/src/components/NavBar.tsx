@@ -113,10 +113,6 @@ function NavBar() {
   return (
     <Box
       sx={{
-        display: "flex",
-        position: "fixed",
-        top: 0,
-        left: 0,
         width: collapsed ? "60px" : "120px",
         transition: "margin-left 0.25s ease",
       }}
@@ -152,6 +148,7 @@ function NavBar() {
           )}
         </IconButton>
         <Box sx={{ mb: 2 }}></Box>
+        {collapsed && <IconButton sx={{ p: 1, mb: 1 }}>R</IconButton>}
         {!collapsed && (
           <IconButton component={Link} to="/" sx={{ p: 1, mb: 1 }}>
             <img
@@ -263,8 +260,6 @@ function NavBar() {
           )}
         </Box>
       </Drawer>
-
-      <Box sx={{ flexGrow: 1 }}></Box>
       <Dialog
         open={changePwdOpen}
         onClose={() => setChangePwdOpen(false)}

@@ -31,8 +31,6 @@ function App() {
         className="container mx-auto"
         style={{
           flexGrow: 1,
-          transition: "margin-left 0.25s ease",
-          marginLeft: "var(--drawer-width,120px)",
         }}
       >
         <Routes>
