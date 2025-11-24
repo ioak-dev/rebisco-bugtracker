@@ -47,8 +47,8 @@ namespace rebisco_bugtracker.Api.domain.defects
             var Entry = _context.Entry(existingDefect);
             foreach (var property in typeof(Defect).GetProperties())
             {
-                if (property.Name == nameof(Defect.Id))
-                    continue;
+                 if (property.Name is nameof(Defect.Id) or nameof(Defect.CreatedDate))
+                continue;
 
                 var newValue = property.GetValue(model);
                 if (newValue != null)

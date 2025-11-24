@@ -25,14 +25,14 @@ namespace rebisco_bugtracker.Api.domain.defects
 
         [HttpGet("{id}")]
         [Authorize]
-        public Defect Get(int id)
+        public IActionResult Get(int id)
         {
             var defect = _service.Get(id);
             if (defect is null)
             {
-                throw new Exception("Defect not found");
+                return NotFound(new { message = "Defect not found" });
             }
-            return defect;
+             return Ok(defect);
         }
 
         [HttpPost]
@@ -54,12 +54,13 @@ namespace rebisco_bugtracker.Api.domain.defects
         [HttpPatch("{id}")]
         public IActionResult Update(int id, [FromBody] Defect model)
         {
-            Defect updatedDefect = _service.PartialUpdate(id, model);
-             if (updatedDefect is null)
+            Defect? updatedDefect = _service.PartialUpdate(id, model);
+            if (updatedDefect is null)
             {
                 return NotFound(new { message = "Defect not found" });
             }
             return Ok(updatedDefect);
         }
     }
+
 }
