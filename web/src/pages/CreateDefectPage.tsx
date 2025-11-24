@@ -2,7 +2,6 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { authorized, defectsApi, mailApi, labelApi } from "../api/client";
 import { useNavigate } from "react-router-dom";
-import Grid from "@mui/material/Grid";
 import {
   Box,
   Button,
@@ -120,7 +119,7 @@ function CreateDefectPage() {
                 onChange={handleChange}
               />
             </Box>
-            <Box sx={{ display: "flex", gap: 2, mb: 2, mt: 3 }}>
+            <Box sx={{ display: "flex", gap: 2, mb: 2, mt: 2}}>
               <TextField
                 select
                 fullWidth
@@ -168,7 +167,7 @@ function CreateDefectPage() {
                 InputLabelProps={{ shrink: true }}
               />
             </Box>
-            <Box sx={{ display: "flex", gap: 2, mb: 2, mt: 3 }}>
+            <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
               <TextField
                 multiline
                 label="Remark"
@@ -180,7 +179,6 @@ function CreateDefectPage() {
               <LabelField labels={labels} setLabels={setLabels} />
             </Box>
           </Box>
-          <Grid size={12}>
             <Box display="flex" gap={2}>
               <Button type="submit" variant="contained">
                 Create
@@ -189,7 +187,6 @@ function CreateDefectPage() {
                 Cancel
               </Button>
             </Box>
-          </Grid>
         </Box>
       </Paper>
     </Container>
