@@ -2,7 +2,6 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { authorized, defectsApi, mailApi, labelApi } from "../api/client";
 import { useNavigate } from "react-router-dom";
-import Grid from "@mui/material/Grid";
 import {
   Box,
   Button,
@@ -74,14 +73,14 @@ function CreateDefectPage() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
+    <Container maxWidth="xl" sx={{ mt: 4 }}>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>
           New Defect
         </Typography>
         <Box component="form" onSubmit={submit}>
-          <Grid container spacing={2}>
-            <Grid size={12}>
+          <Box sx={{ display: "flex", flexDirection: "column", mb: 2 }}>
+            <Box sx={{ display: "flex", gap: 2, mb: 2, mt: 3 }}>
               <TextField
                 fullWidth
                 required
@@ -90,8 +89,6 @@ function CreateDefectPage() {
                 value={form.raisedByTeam}
                 onChange={handleChange}
               />
-            </Grid>
-            <Grid size={12}>
               <TextField
                 fullWidth
                 required
@@ -100,31 +97,29 @@ function CreateDefectPage() {
                 value={form.responsible}
                 onChange={handleChange}
               />
-            </Grid>
-            <Grid size={12}>
+            </Box>
+            <Box sx={{ mb: 2, mt: 2 }}>
               <TextField
                 fullWidth
                 multiline
-                minRows={3}
                 required
                 label="Description"
                 name="description"
                 value={form.description}
                 onChange={handleChange}
               />
-            </Grid>
-            <Grid size={12}>
+            </Box>
+            <Box sx={{ mb: 2, mt: 2 }}>
               <TextField
                 fullWidth
                 multiline
-                minRows={2}
                 label="Activities"
                 name="activities"
                 value={form.activities}
                 onChange={handleChange}
               />
-            </Grid>
-            <Grid size={12}>
+            </Box>
+            <Box sx={{ display: "flex", gap: 2, mb: 2, mt: 2}}>
               <TextField
                 select
                 fullWidth
@@ -139,8 +134,6 @@ function CreateDefectPage() {
                   </MenuItem>
                 ))}
               </TextField>
-            </Grid>
-            <Grid size={12}>
               <TextField
                 select
                 fullWidth
@@ -155,8 +148,6 @@ function CreateDefectPage() {
                   </MenuItem>
                 ))}
               </TextField>
-            </Grid>
-            <Grid size={12}>
               <TextField
                 fullWidth
                 type="date"
@@ -166,8 +157,6 @@ function CreateDefectPage() {
                 onChange={handleChange}
                 InputLabelProps={{ shrink: true }}
               />
-            </Grid>
-            <Grid size={12}>
               <TextField
                 fullWidth
                 type="date"
@@ -177,32 +166,27 @@ function CreateDefectPage() {
                 onChange={handleChange}
                 InputLabelProps={{ shrink: true }}
               />
-            </Grid>
-            <Grid size={12}>
+            </Box>
+            <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
               <TextField
-                fullWidth
                 multiline
-                minRows={2}
                 label="Remark"
                 name="remark"
+                fullWidth
                 value={form.remark}
                 onChange={handleChange}
               />
-            </Grid>
-            <Grid size={12}>
               <LabelField labels={labels} setLabels={setLabels} />
-            </Grid>
-            <Grid size={12}>
-              <Box display="flex" gap={2}>
-                <Button type="submit" variant="contained">
-                  Create
-                </Button>
-                <Button variant="outlined" onClick={() => navigate("/defects")}>
-                  Cancel
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
+            <Box display="flex" gap={2}>
+              <Button type="submit" variant="contained">
+                Create
+              </Button>
+              <Button variant="outlined" onClick={() => navigate("/defects")}>
+                Cancel
+              </Button>
+            </Box>
         </Box>
       </Paper>
     </Container>
