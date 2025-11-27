@@ -31,8 +31,9 @@ namespace rebisco_bugtracker.Api.domain.defects
 
         public string? Remark { get; set; }
 
-         public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
          
-          public DateTime UpdatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
+
     }
 }

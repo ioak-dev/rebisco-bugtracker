@@ -7,6 +7,7 @@ namespace rebisco_bugtracker.Api.domain.defects
         public BugTrackerContext(DbContextOptions<BugTrackerContext> options) : base(options) { }
 
         public DbSet<Defect> Defect { get; set; }
+        public DbSet<BatchResult> BatchResults { get; set; }
 
         public override int SaveChanges()
         {

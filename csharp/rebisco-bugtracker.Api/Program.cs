@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using rebisco_bugtracker.Api.domain.defects;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using OfficeOpenXml;
 namespace rebisco_bugtracker.Api
 {
     public class Program
@@ -10,6 +10,7 @@ namespace rebisco_bugtracker.Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            ExcelPackage.License.SetNonCommercialPersonal("Test");
             var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
             var audience = builder.Configuration["Auth0:Audience"];
 
@@ -43,7 +44,7 @@ namespace rebisco_bugtracker.Api
         builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminOnly", policy =>
-                policy.RequireClaim("https://csharp.demo.com/roles", "USER"));
+                policy.RequireClaim("https://csharp.demo.com/roles", "ADMIN"));
         });
             builder.Services.AddControllers();
             builder.Services.AddDbContext<BugTrackerContext>(options =>
@@ -54,6 +55,7 @@ namespace rebisco_bugtracker.Api
             );
             builder.Services.AddScoped<DefectService>();
             var app = builder.Build();
+            app.UseMiddleware<GlobalExceptionMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
