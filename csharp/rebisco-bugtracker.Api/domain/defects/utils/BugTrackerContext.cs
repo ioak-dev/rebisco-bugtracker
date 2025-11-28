@@ -8,6 +8,8 @@ namespace rebisco_bugtracker.Api.domain.defects
 
         public DbSet<Defect> Defect { get; set; }
 
+        public DbSet<DefectFile> DefectFile { get; set; }
+
         public override int SaveChanges()
         {
             var entries = ChangeTracker.Entries()
