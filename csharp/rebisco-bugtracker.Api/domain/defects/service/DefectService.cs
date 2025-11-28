@@ -6,7 +6,7 @@ using MySqlConnector;
 
 namespace rebisco_bugtracker.Api.domain.defects
 {
-    public class DefectService
+    public class DefectService : IDefectService
     {
         private readonly BugTrackerContext _context;
         private readonly IFileStorageGateway _gateway;

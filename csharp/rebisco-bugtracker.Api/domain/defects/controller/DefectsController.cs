@@ -8,13 +8,13 @@ namespace rebisco_bugtracker.Api.domain.defects
     [Route("defects")]
     public class DefectsController : ControllerBase
     {
-        private readonly DefectService _service;
+        private readonly IDefectService _service;
 
-        public DefectsController(DefectService service)
+        public DefectsController(IDefectService service)
         {
             _service = service;
         }
-
+        
         [HttpGet]
         [AllowAnonymous]
         public List<Defect> List()
