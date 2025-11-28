@@ -28,7 +28,7 @@ namespace rebisco_bugtracker.Api.domain.defects
         public IActionResult Get(int id)
         {
             var defect = _service.Get(id);
-             return Ok(defect);
+            return Ok(defect);
         }
 
         [HttpPost]
@@ -52,6 +52,35 @@ namespace rebisco_bugtracker.Api.domain.defects
         {
             Defect? updatedDefect = _service.PartialUpdate(id, model);
             return Ok(updatedDefect);
+        }
+
+
+
+        [HttpPost("{defectId}/file")]
+        public async Task<IActionResult> UploadFile(int defectId, List<IFormFile> files)
+        {
+            if (files == null || files.Count == 0)
+                return BadRequest("No file provided.");
+            var uploaded = await _service.UploadFileAsync(defectId, files);
+            return Ok(uploaded);
+        }
+
+        [HttpGet("{defectId}/file/{*reference}")]
+        public async Task<IActionResult> Download(string reference)
+        {
+            var fileBytes = await _service.GetFilesByDefectAsync(reference);
+            if (fileBytes.Length == 0)
+                return NotFound();
+            return File(fileBytes, "application/octet-stream");
+        }
+
+        [HttpDelete("{defectId}/file/{*reference}")]
+        public async Task<IActionResult> Delete(string reference)
+        {
+            var ok = await _service.DeleteFileAsync(reference);
+            if (!ok)
+                return NotFound();
+            return NoContent();
         }
 
         [HttpGet("byDate")]

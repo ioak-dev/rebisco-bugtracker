@@ -9,14 +9,22 @@ namespace rebisco_bugtracker.Api.domain.defects
     public class DefectService
     {
         private readonly BugTrackerContext _context;
-
-        public DefectService(BugTrackerContext context)
+        private readonly IFileStorageGateway _gateway;
+        public DefectService(BugTrackerContext context, IFileStorageGateway gateway)
         {
             _context = context;
+            _gateway = gateway;
         }
 
         public List<Defect> GetAll()
-            => _context.Defect.ToList();
+        {
+            List<DefectFile> defectFile= _context.DefectFile.ToList();
+            _context.Defect.ToList().ForEach(defect =>
+            {
+                defect.Files = defectFile.Where(f => f.DefectId == defect.Id).ToList();
+            });
+            return _context.Defect.ToList();
+        }
 
         public Defect? Get(int id)
         {
@@ -25,12 +33,15 @@ namespace rebisco_bugtracker.Api.domain.defects
             {          
                 throw new ResponseStatusException(404, $"Defect with id {id} not found");
             }
+             defect.Files = _context.DefectFile
+                    .Where(f => f.DefectId == defect.Id)
+                    .ToList();
         return defect;
         }
-          
+      
         public Defect Create(Defect defect)
         { 
-             _context.Defect.Add(defect);
+            _context.Defect.Add(defect);
             _context.SaveChanges();
             return defect;     
         }
@@ -81,7 +92,6 @@ namespace rebisco_bugtracker.Api.domain.defects
                   throw new ResponseStatusException(404, $"Defect {id} not found");
             }
         }
-
         
         public List<Defect> GetDefectsByMonthAndYear(int month, int year)
         {
@@ -156,6 +166,22 @@ namespace rebisco_bugtracker.Api.domain.defects
                 Success = success,
                 Failures = failures
             };
+        }
+
+        public Task<List<DefectFile>> UploadFileAsync(int defectId, List<IFormFile> files)
+        {
+            return _gateway.UploadAsync(files, defectId);
+        }
+
+
+        public Task<byte[]> GetFilesByDefectAsync(string reference)
+        {
+            return _gateway.DownloadAsync(reference);
+        }
+
+        public Task<bool> DeleteFileAsync(string reference)
+        {
+             return _gateway.DeleteAsync(reference);
         }
     }
 }
