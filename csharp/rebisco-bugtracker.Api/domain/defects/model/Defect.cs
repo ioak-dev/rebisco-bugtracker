@@ -36,5 +36,6 @@ namespace rebisco_bugtracker.Api.domain.defects
         public DateTime UpdatedDate { get; set; }
 
         public ICollection<DefectFile> Files { get; set; } = new List<DefectFile>();
+        
     }
 }

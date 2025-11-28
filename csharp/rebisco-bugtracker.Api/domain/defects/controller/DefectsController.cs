@@ -28,10 +28,6 @@ namespace rebisco_bugtracker.Api.domain.defects
         public IActionResult Get(int id)
         {
             var defect = _service.Get(id);
-            if (defect is null)
-            {
-                return NotFound(new { message = "Defect not found" });
-            }
             return Ok(defect);
         }
 
@@ -55,12 +51,9 @@ namespace rebisco_bugtracker.Api.domain.defects
         public IActionResult Update(int id, [FromBody] Defect model)
         {
             Defect? updatedDefect = _service.PartialUpdate(id, model);
-            if (updatedDefect is null)
-            {
-                return NotFound(new { message = "Defect not found" });
-            }
             return Ok(updatedDefect);
         }
+
 
 
         [HttpPost("{defectId}/file")]
@@ -90,6 +83,26 @@ namespace rebisco_bugtracker.Api.domain.defects
             return NoContent();
         }
 
-    }
+        [HttpGet("byDate")]
+        public IActionResult GetByMonth([FromQuery] int month, [FromQuery] int year)
+        {
+            var defects = _service.GetDefectsByMonthAndYear(month, year);
+            return Ok(defects);
+        }
 
+        [HttpPost("import")]
+        public async Task<IActionResult> ImportExcel(IFormFile file)
+        {
+            Console.WriteLine("inside method");
+            if (file == null || file.Length == 0)
+                return BadRequest("File is required.");
+
+            var defects = await _service.ReadExcel(file);
+            Console.WriteLine("Defects is "+defects);
+
+            var result = _service.BatchUpsert(defects);
+
+            return Ok(result);
+        }
+    }
 }
