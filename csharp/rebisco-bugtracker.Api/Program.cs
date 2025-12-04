@@ -3,9 +3,13 @@ using rebisco_bugtracker.Api.domain.defects;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Amazon.S3;
-
 using Amazon.S3.Model;
 using OfficeOpenXml;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
+using Microsoft.OpenApi.Models;
 
 namespace rebisco_bugtracker.Api
 {
@@ -14,6 +18,59 @@ namespace rebisco_bugtracker.Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            //Swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Bug Tracker API",
+                    Version = "v1",
+                    Description = "Documentation for Bug Tracker"
+                });
+
+                c.EnableAnnotations();
+
+                // JWT Bearer config in Swagger
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using Bearer scheme. Example: Bearer {token}",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
+
+
+
+            //healthcheck
+            builder.Services.AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy());
+
+            // UI storage
+            builder.Services.AddHealthChecksUI(options =>
+            {
+                options.AddHealthCheckEndpoint("API Health", "/health");
+                options.SetEvaluationTimeInSeconds(50 * 60);
+            }).AddInMemoryStorage();
             ExcelPackage.License.SetNonCommercialPersonal("Test");
             var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
             var audience = builder.Configuration["Auth0:Audience"];
@@ -45,12 +102,12 @@ namespace rebisco_bugtracker.Api
                 }
                 };
             });
-           
-        builder.Services.AddAuthorization(options =>
-        {
-            options.AddPolicy("AdminOnly", policy =>
-                policy.RequireClaim("https://csharp.demo.com/roles", "ADMIN"));
-        });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy =>
+                    policy.RequireClaim("https://csharp.demo.com/roles", "ADMIN"));
+            });
 
             builder.Services.AddControllers();
             builder.Services.AddScoped<IDefectService, DefectService>();
@@ -88,6 +145,22 @@ namespace rebisco_bugtracker.Api
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
+            // Raw JSON health endpoint
+            app.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
+            // UI Dashboard
+            app.MapHealthChecksUI(options =>
+            {
+                options.UIPath = "/healthchecks-ui";
+                options.ApiPath = "/healthchecks-ui-api";
+            });
+
             app.Run();
         }
     }
