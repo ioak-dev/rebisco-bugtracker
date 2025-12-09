@@ -146,16 +146,8 @@ namespace rebisco_bugtracker.Api.domain.defects
         [SwaggerResponse(404, "No defects found")]
         [HttpPost("import")]
         public async Task<IActionResult> ImportExcel(IFormFile file)
-        {
-            Console.WriteLine("inside method");
-            if (file == null || file.Length == 0)
-                return BadRequest("File is required.");
-
-            var defects = await _service.ReadExcel(file);
-            Console.WriteLine("Defects is " + defects);
-
-            var result = _service.BatchUpsert(defects);
-
+        {        
+            var result = await _service.BatchUpsert(file);
             return Ok(result);
         }
     }

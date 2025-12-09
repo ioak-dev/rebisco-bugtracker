@@ -127,8 +127,9 @@ namespace rebisco_bugtracker.Api.domain.defects
              return defects;
         }
 
-        public BatchResult BatchUpsert(List<DefectImportModel> defects)
+        public async Task<BatchResult> BatchUpsert(IFormFile file)
         {
+            var defects = await ReadExcel(file);
             var options = new JsonSerializerOptions
             {
                 DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
