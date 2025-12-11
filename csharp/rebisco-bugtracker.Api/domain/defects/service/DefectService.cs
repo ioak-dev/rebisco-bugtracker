@@ -133,32 +133,7 @@ namespace rebisco_bugtracker.Api.domain.defects
                 .ToList();
         }
 
-        public async Task<List<DefectImportModel>> ReadExcel(IFormFile file)
-        {
-            var defects = new List<DefectImportModel>();
-            using var stream = new MemoryStream();
-            await file.CopyToAsync(stream);
-            stream.Position = 0;
-
-            using var package = new ExcelPackage(stream);
-            var worksheet = package.Workbook.Worksheets[0];
-            int rowCount = worksheet.Dimension.Rows;
-
-            for (int row = 2; row <= rowCount; row++)
-            {
-                defects.Add(new DefectImportModel
-                {
-                    Id = int.TryParse(worksheet.Cells[row, 1].Text, out var id) ? id : (int?)null,
-                    Description = worksheet.Cells[row, 2].Text,
-                    Priority = int.TryParse(worksheet.Cells[row, 3].Text, out var priority) ? priority : (int?)null,
-                    RaisedByTeam = worksheet.Cells[row, 4].Text,
-                    Responsible = worksheet.Cells[row, 5].Text,
-                });
-            }
-            return defects;
-        }
-
-        public async Task<BatchResult> BatchUpsert(IFormFile file)
+       public async Task<BatchResult> BatchUpsert(IFormFile file)
         {
             var defects = await ReadExcel(file);
             var options = new JsonSerializerOptions
@@ -167,7 +142,7 @@ namespace rebisco_bugtracker.Api.domain.defects
             };
 
             string json = JsonSerializer.Serialize(defects, options);
-            Console.WriteLine("JSON BEING SENT: " + json);
+           // Console.WriteLine("JSON BEING SENT: " + json);
 
             using var cmd = _context.Database.GetDbConnection().CreateCommand();
             cmd.CommandText = "bugtracker.sp_BatchUpsertDefects";
@@ -177,7 +152,7 @@ namespace rebisco_bugtracker.Api.domain.defects
             {
                 Value = json
             };
-
+   
             cmd.Parameters.Add(jsonParam);
             _context.Database.OpenConnection();
             using var reader = cmd.ExecuteReader();
@@ -198,6 +173,31 @@ namespace rebisco_bugtracker.Api.domain.defects
                 Success = success,
                 Failures = failures
             };
+        }
+
+        public async Task<List<DefectImportModel>> ReadExcel(IFormFile file)
+        {
+            var defects = new List<DefectImportModel>();
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+            stream.Position = 0;
+
+            using var package = new ExcelPackage(stream);
+            var worksheet = package.Workbook.Worksheets[0];
+            int rowCount = worksheet.Dimension.Rows;
+
+            for (int row = 2; row <= rowCount; row++) 
+            {
+            defects.Add(new DefectImportModel
+                {
+                    Id = int.TryParse(worksheet.Cells[row, 1].Text, out var id) ? id : (int?)null,
+                    Description = worksheet.Cells[row, 2].Text,
+                    Priority = int.TryParse(worksheet.Cells[row, 3].Text, out var priority) ? priority : (int?)null,
+                    RaisedByTeam = worksheet.Cells[row, 4].Text,
+                    Responsible = worksheet.Cells[row, 5].Text,
+                });
+            }
+             return defects;
         }
 
         public async Task<List<DefectFile>> UploadFileAsync(int defectId, List<IFormFile> files)

@@ -21,7 +21,7 @@ namespace rebisco_bugtracker.Api.domain.defects
         [Required]
         public string Responsible { get; set; } = string.Empty;
 
-        public string? Priority { get; set; }
+        public int? Priority { get; set; }
 
         public DateTime? DueDate { get; set; }
 
