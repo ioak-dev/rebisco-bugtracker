@@ -8,7 +8,7 @@ using OfficeOpenXml;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-
+using Quartz;
 using Microsoft.OpenApi.Models;
 
 namespace rebisco_bugtracker.Api
@@ -137,6 +137,17 @@ namespace rebisco_bugtracker.Api
                  Amazon.RegionEndpoint.USEast1
                    );
             });
+            builder.Services.AddQuartz(q =>
+            {
+                var jobKey = new JobKey("WeeklyDefectsExportJob");
+                q.AddJob<WeeklyDefectsExportJob>(opts => opts.WithIdentity(jobKey));
+                q.AddTrigger(opts => opts
+                    .ForJob(jobKey)
+                    .WithIdentity("WeeklyDefectsExportTrigger")
+                    .WithCronSchedule("0 0/2 * * * ?")
+                );
+            });
+            builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             builder.Services.AddScoped<DbStorage>();
             builder.Services.AddScoped<S3FileStorage>();
             builder.Services.AddScoped<DefectService>();
