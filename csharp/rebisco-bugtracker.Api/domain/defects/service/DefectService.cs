@@ -50,13 +50,15 @@ namespace rebisco_bugtracker.Api.domain.defects
             {
                 _context.Defect.Add(defect);
                 _context.SaveChanges();
-                Console.WriteLine(defect.Responsible);
-                await _emailSender.SendEmailAsync(
-            defect.Responsible,
-            $"New Defect Assigned: {defect.Description}",
-            $"<p>A new defect was created:</p><p><b>{defect.Description}</b></p>",
-            null
-         );
+                if (defect.notify)
+                {
+                    await _emailSender.SendEmailAsync(
+                         defect.Responsible,
+                         $"New Defect Assigned: {defect.Description}",
+                         $"<p>A new defect was created:</p><p><b>{defect.Description}</b></p>",
+                         null
+                         );
+                }
             }
             catch (Exception e)
             {
@@ -101,22 +103,24 @@ namespace rebisco_bugtracker.Api.domain.defects
                 }
             }
             _context.SaveChanges();
-            string changesSummary = BuildChangesSummary(oldDefect, existingDefect);
-            foreach (var to in new[] { existingDefect.CreatedBy, existingDefect.Responsible })
+            if (model.notify)
             {
-                if (!string.IsNullOrWhiteSpace(to))
+                string changesSummary = BuildChangesSummary(oldDefect, existingDefect);
+                foreach (var to in new[] { existingDefect.CreatedBy, existingDefect.Responsible })
                 {
-                    await _emailSender.SendEmailAsync(
-                        to,
-                        $"Defect Updated: {existingDefect.Description}",
-                        $"<p>The defect has been updated.</p><p>{changesSummary}</p>",
-                        null
-                    );
+                    if (!string.IsNullOrWhiteSpace(to))
+                    {
+                        await _emailSender.SendEmailAsync(
+                            to,
+                            $"Defect Updated: {existingDefect.Description}",
+                            $"<p>The defect has been updated.</p><p>{changesSummary}</p>",
+                            null
+                        );
+                    }
                 }
             }
             _context.Entry(existingDefect).State = EntityState.Detached;
             return existingDefect;
-
         }
 
 
@@ -196,9 +200,34 @@ namespace rebisco_bugtracker.Api.domain.defects
             };
         }
 
-        public Task<List<DefectFile>> UploadFileAsync(int defectId, List<IFormFile> files)
+        public async Task<List<DefectFile>> UploadFileAsync(int defectId, List<IFormFile> files)
         {
-            return _gateway.UploadAsync(files, defectId);
+            // Upload files to DB or storage
+            var defectFiles = await _gateway.UploadAsync(files, defectId);
+            var defect = _context.Defect.Find(defectId);
+            if (defect != null && defect.notify)
+            {
+                var attachments = new List<(string FileName, byte[] Content)>();
+                foreach (var file in files)
+                {
+                    using var ms = new MemoryStream();
+                    await file.CopyToAsync(ms);
+                    attachments.Add((file.FileName, ms.ToArray()));
+                }
+                foreach (var to in new[] { defect.CreatedBy, defect.Responsible })
+                {
+                    if (!string.IsNullOrWhiteSpace(to))
+                    {
+                        await _emailSender.SendEmailAsync(
+                            to,
+                            $"New File(s) Uploaded for Defect: {defect.Description}",
+                            "<p>A new file has been uploaded to the defect.</p>",
+                            attachments
+                        );
+                    }
+                }
+            }
+            return defectFiles;
         }
 
 
@@ -222,7 +251,7 @@ namespace rebisco_bugtracker.Api.domain.defects
                 var newVal = prop.GetValue(newDefect)?.ToString();
                 if (oldVal != newVal)
                 {
-                    sb.Append($"<li><b>{prop.Name}:</b> {oldVal} → {newVal}</li>");
+                    sb.Append($"<li><b>{prop.Name}:</b> {oldVal} → <span style='background:#d4edda; color:#155724; padding:2px 6px; border-radius:4px;'>{newVal}</span></li>");
                 }
             }
             sb.Append("</ul>");
