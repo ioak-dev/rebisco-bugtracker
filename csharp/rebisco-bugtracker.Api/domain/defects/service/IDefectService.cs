@@ -4,10 +4,10 @@ namespace rebisco_bugtracker.Api.domain.defects
     {
         List<Defect> GetAll();
         Defect? Get(int id);
-        Defect Create(Defect defect);
+        Task<Defect> Create(Defect defect);
         Defect? Update(Defect defect);
         bool Delete(int id);
-        Defect? PartialUpdate(int id, Defect model);
+        Task<Defect?> PartialUpdate(int id, Defect model);
         List<Defect> GetDefectsByMonthAndYear(int month, int year);
         Task<BatchResult> BatchUpsert(IFormFile file);
         Task<List<DefectFile>> UploadFileAsync(int defectId, List<IFormFile> files);

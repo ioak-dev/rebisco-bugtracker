@@ -51,10 +51,9 @@ namespace rebisco_bugtracker.Api.domain.defects
         [SwaggerResponse(404, "No defects found")]
         [HttpPost]
         [Authorize]
-        public Defect Create([FromBody] Defect model)
+        public Task<Defect> Create([FromBody] Defect model)
         {
-            Defect created = _service.Create(model);
-            return created;
+            return _service.Create(model);
         }
 
         [SwaggerOperation(
@@ -76,10 +75,10 @@ namespace rebisco_bugtracker.Api.domain.defects
         [SwaggerResponse(200, "Successfully updated the defect list")]
         [SwaggerResponse(404, "No defects found")]
         [HttpPatch("{id}")]
-        public IActionResult Update(int id, [FromBody] Defect model)
+        public async Task<IActionResult> Update(int id, [FromBody] Defect model)
         {
-            Defect? updatedDefect = _service.PartialUpdate(id, model);
-            return Ok(updatedDefect);
+            var result = await _service.PartialUpdate(id, model);
+            return Ok(result);
         }
 
 
