@@ -24,25 +24,27 @@ public class GlobalExceptionMiddleware
             await context.Response.WriteAsJsonAsync(new { error = ex.Message });
             return;
         }
-        catch(DbUpdateException dbEx)
+        catch (DbUpdateException dbEx)
         {
             Console.WriteLine(dbEx.Message);
-             if (dbEx.InnerException is MySqlException mysqlEx)
+            if (dbEx.InnerException is MySqlException mysqlEx)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(new { error = mysqlEx.Message });
                 return;
-            }  
+            }
             context.Response.StatusCode = 500;
             await context.Response.WriteAsJsonAsync(new { error = "Database update error" });
-            return; 
+            return;
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.StackTrace);
+            Console.WriteLine("ERROR: " + ex.Message);
+            Console.WriteLine("STACK: " + ex.StackTrace);
             context.Response.StatusCode = 500;
-            await context.Response.WriteAsJsonAsync(new { error = "Internal server error" });
+            await context.Response.WriteAsJsonAsync(new { error = ex.Message });
             return;
         }
+
     }
 }

@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using MySqlConnector;
+using System.Text;
 
 
 namespace rebisco_bugtracker.Api.domain.defects
@@ -10,15 +11,19 @@ namespace rebisco_bugtracker.Api.domain.defects
     {
         private readonly BugTrackerContext _context;
         private readonly IFileStorageGateway _gateway;
-        public DefectService(BugTrackerContext context, IFileStorageGateway gateway)
+
+        private readonly IEmailSender _emailSender;
+        public DefectService(BugTrackerContext context, IFileStorageGateway gateway,
+        IEmailSender emailSender)
         {
             _context = context;
             _gateway = gateway;
+            _emailSender = emailSender;
         }
 
         public List<Defect> GetAll()
         {
-            List<DefectFile> defectFile= _context.DefectFile.ToList();
+            List<DefectFile> defectFile = _context.DefectFile.ToList();
             _context.Defect.ToList().ForEach(defect =>
             {
                 defect.Files = defectFile.Where(f => f.DefectId == defect.Id).ToList();
@@ -30,20 +35,37 @@ namespace rebisco_bugtracker.Api.domain.defects
         {
             var defect = _context.Defect.Find(id);
             if (defect is null)
-            {          
+            {
                 throw new ResponseStatusException(404, $"Defect with id {id} not found");
             }
-             defect.Files = _context.DefectFile
-                    .Where(f => f.DefectId == defect.Id)
-                    .ToList();
-        return defect;
+            defect.Files = _context.DefectFile
+                   .Where(f => f.DefectId == defect.Id)
+                   .ToList();
+            return defect;
         }
-      
-        public Defect Create(Defect defect)
-        { 
-            _context.Defect.Add(defect);
-            _context.SaveChanges();
-            return defect;     
+
+        public async Task<Defect> Create(Defect defect)
+        {
+            try
+            {
+                _context.Defect.Add(defect);
+                _context.SaveChanges();
+                if (defect.notify)
+                {
+                    await _emailSender.SendEmailAsync(
+                         defect.Responsible,
+                         $"New Defect Assigned: {defect.Description}",
+                         $"<p>A new defect was created:</p><p><b>{defect.Description}</b></p>",
+                         null
+                         );
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            return defect;
+
         }
 
         public Defect? Update(Defect defect)
@@ -56,53 +78,62 @@ namespace rebisco_bugtracker.Api.domain.defects
         public bool Delete(int id)
         {
             var defect = _context.Defect.Find(id);
-             if (defect is null)
-             throw new ResponseStatusException(404, $"Defect with id {id} not found");
-
+            if (defect is null)
+                throw new ResponseStatusException(404, $"Defect with id {id} not found");
             _context.Defect.Remove(defect);
             _context.SaveChanges();
             return true;
         }
 
-        public Defect? PartialUpdate(int id, Defect model)
+        public async Task<Defect?> PartialUpdate(int id, Defect model)
         {
             var existingDefect = _context.Defect.Find(id);
             if (existingDefect is null)
                 throw new ResponseStatusException(404, $"Defect {id} not found");
-
-            try
+            var oldDefect = existingDefect.ShallowCopy();
+            foreach (var property in typeof(Defect).GetProperties())
             {
-                var Entry = _context.Entry(existingDefect);
-                foreach (var property in typeof(Defect).GetProperties())
-                {
-                    if (property.Name is nameof(Defect.Id) or nameof(Defect.CreatedDate))
-                        continue;
+                if (property.Name is nameof(Defect.Id) or nameof(Defect.CreatedDate))
+                    continue;
 
-                    var newValue = property.GetValue(model);
-                    if (newValue != null)
+                var newValue = property.GetValue(model);
+                if (newValue != null)
+                {
+                    property.SetValue(existingDefect, newValue);
+                }
+            }
+            _context.SaveChanges();
+            if (model.notify)
+            {
+                string changesSummary = BuildChangesSummary(oldDefect, existingDefect);
+                foreach (var to in new[] { existingDefect.CreatedBy, existingDefect.Responsible })
+                {
+                    if (!string.IsNullOrWhiteSpace(to))
                     {
-                        property.SetValue(existingDefect, newValue);
+                        await _emailSender.SendEmailAsync(
+                            to,
+                            $"Defect Updated: {existingDefect.Description}",
+                            $"<p>The defect has been updated.</p><p>{changesSummary}</p>",
+                            null
+                        );
                     }
                 }
-                _context.SaveChanges();
-                return existingDefect;
             }
-            catch(Exception exp)
-            {
-                  throw new ResponseStatusException(404, $"Defect {id} not found");
-            }
+            _context.Entry(existingDefect).State = EntityState.Detached;
+            return existingDefect;
         }
-        
+
+
         public List<Defect> GetDefectsByMonthAndYear(int month, int year)
         {
             if (month < 1 || month > 12)
-            throw new ResponseStatusException(400 ,"Month must be between 1 and 12" );
+                throw new ResponseStatusException(400, "Month must be between 1 and 12");
             return _context.Defect
                 .FromSqlRaw("CALL sp_GetDefectsByMonthYear({0}, {1})", month, year)
                 .ToList();
         }
 
-        public async Task<BatchResult> BatchUpsert(IFormFile file)
+       public async Task<BatchResult> BatchUpsert(IFormFile file)
         {
             var defects = await ReadExcel(file);
             var options = new JsonSerializerOptions
@@ -169,9 +200,34 @@ namespace rebisco_bugtracker.Api.domain.defects
              return defects;
         }
 
-        public Task<List<DefectFile>> UploadFileAsync(int defectId, List<IFormFile> files)
+        public async Task<List<DefectFile>> UploadFileAsync(int defectId, List<IFormFile> files)
         {
-            return _gateway.UploadAsync(files, defectId);
+            // Upload files to DB or storage
+            var defectFiles = await _gateway.UploadAsync(files, defectId);
+            var defect = _context.Defect.Find(defectId);
+            if (defect != null && defect.notify)
+            {
+                var attachments = new List<(string FileName, byte[] Content)>();
+                foreach (var file in files)
+                {
+                    using var ms = new MemoryStream();
+                    await file.CopyToAsync(ms);
+                    attachments.Add((file.FileName, ms.ToArray()));
+                }
+                foreach (var to in new[] { defect.CreatedBy, defect.Responsible })
+                {
+                    if (!string.IsNullOrWhiteSpace(to))
+                    {
+                        await _emailSender.SendEmailAsync(
+                            to,
+                            $"New File(s) Uploaded for Defect: {defect.Description}",
+                            "<p>A new file has been uploaded to the defect.</p>",
+                            attachments
+                        );
+                    }
+                }
+            }
+            return defectFiles;
         }
 
 
@@ -182,7 +238,25 @@ namespace rebisco_bugtracker.Api.domain.defects
 
         public Task<bool> DeleteFileAsync(string reference)
         {
-             return _gateway.DeleteAsync(reference);
+            return _gateway.DeleteAsync(reference);
         }
+
+
+        private string BuildChangesSummary(Defect oldDefect, Defect newDefect)
+        {
+            var sb = new StringBuilder("<ul>");
+            foreach (var prop in typeof(Defect).GetProperties())
+            {
+                var oldVal = prop.GetValue(oldDefect)?.ToString();
+                var newVal = prop.GetValue(newDefect)?.ToString();
+                if (oldVal != newVal)
+                {
+                    sb.Append($"<li><b>{prop.Name}:</b> {oldVal} → <span style='background:#d4edda; color:#155724; padding:2px 6px; border-radius:4px;'>{newVal}</span></li>");
+                }
+            }
+            sb.Append("</ul>");
+            return sb.ToString();
+        }
+
     }
 }

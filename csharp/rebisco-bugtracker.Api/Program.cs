@@ -111,6 +111,7 @@ namespace rebisco_bugtracker.Api
 
             builder.Services.AddControllers();
             builder.Services.AddScoped<IDefectService, DefectService>();
+            builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
             builder.Services.AddDbContext<BugTrackerContext>(options =>
                 options.UseMySql(
                     builder.Configuration.GetConnectionString("DefaultConnection"),
