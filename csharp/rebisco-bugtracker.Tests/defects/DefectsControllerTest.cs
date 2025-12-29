@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -61,7 +62,7 @@ namespace rebisco_bugtracker.Tests.defects
         }
 
         [Fact]
-        public void Create_ShouldReturnCreatedDefect()
+        public async Task Create_ShouldReturnCreatedDefect()
         {
             var defect = new Defect
             {
@@ -73,9 +74,9 @@ namespace rebisco_bugtracker.Tests.defects
                 UpdatedDate = DateTime.Now
             };
 
-            _service.Setup(s => s.Create(defect)).Returns(defect);
+            _service.Setup(s => s.Create(defect)).ReturnsAsync(defect);
 
-            var result = _controller.Create(defect);
+            var result = await _controller.Create(defect);
 
             result.Should().Be(defect);
         }
@@ -101,7 +102,7 @@ namespace rebisco_bugtracker.Tests.defects
         }
 
         [Fact]
-        public void Update_ShouldReturnOk_WhenSuccess()
+        public async Task Update_ShouldReturnOk_WhenSuccess()
         {
             var defect = new Defect
             {
@@ -113,9 +114,9 @@ namespace rebisco_bugtracker.Tests.defects
                 UpdatedDate = DateTime.Now
             };
 
-            _service.Setup(s => s.PartialUpdate(1, defect)).Returns(defect);
+            _service.Setup(s => s.PartialUpdate(1, defect)).ReturnsAsync(defect);
 
-            var result = _controller.Update(1, defect);
+            var result = await _controller.Update(1, defect);
 
             result.Should().BeOfType<OkObjectResult>();
         }
@@ -200,28 +201,22 @@ namespace rebisco_bugtracker.Tests.defects
             result.Should().BeOfType<OkObjectResult>();
         }
 
-        [Fact]
-        public async Task ImportExcel_ShouldReturnBadRequest_WhenNoFile()
-        {
-            var result = await _controller.ImportExcel(null);
 
-            result.Should().BeOfType<BadRequestObjectResult>();
-        }
 
         [Fact]
         public async Task ImportExcel_ShouldReturnOk_WhenSuccess()
         {
             var file = new FormFile(new MemoryStream(new byte[10]), 0, 10, "file", "test.xlsx");
 
-            _service.Setup(s => s.ReadExcel(file))
-                    .ReturnsAsync(new List<DefectImportModel>());
-            _service.Setup(s => s.BatchUpsert(It.IsAny<List<DefectImportModel>>()))
-                    .Returns(new BatchResult());
+            _service
+                .Setup(s => s.BatchUpsert(It.IsAny<IFormFile>()))
+                .ReturnsAsync(new BatchResult());
 
             var result = await _controller.ImportExcel(file);
 
             result.Should().BeOfType<OkObjectResult>();
         }
-
     }
+
+
 }

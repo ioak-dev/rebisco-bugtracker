@@ -10,6 +10,7 @@ namespace rebisco_bugtracker.Tests.defects
         private readonly BugTrackerContext _context;
         private readonly DefectService _service;
         private readonly Mock<IFileStorageGateway> _gateway;
+        private readonly Mock<IEmailSender> _emailSender;
 
         public DefectServiceTest()
         {
@@ -19,7 +20,8 @@ namespace rebisco_bugtracker.Tests.defects
 
             _context = new BugTrackerContext(options);
             _gateway = new Mock<IFileStorageGateway>();
-            _service = new DefectService(_context, _gateway.Object);
+            _emailSender = new Mock<IEmailSender>();
+            _service = new DefectService(_context, _gateway.Object, _emailSender.Object);
         }
 
         [Fact]
@@ -140,19 +142,20 @@ namespace rebisco_bugtracker.Tests.defects
         }
 
         [Fact]
-        public void PartialUpdate_ShouldThrow_WhenNotFound()
+        public async Task PartialUpdate_ShouldThrow_WhenNotFound()
         {
-            Action act = () => _service.PartialUpdate(999, new Defect());
-            act.Should().Throw<ResponseStatusException>();
+            Func<Task> act = async () =>
+                await _service.PartialUpdate(999, new Defect());
+
+            await act.Should().ThrowAsync<ResponseStatusException>();
         }
 
-    
         [Fact]
         public void GetDefectsByMonthAndYear_ShouldThrow_WhenMonthInvalid()
         {
             Action action = () => _service.GetDefectsByMonthAndYear(15, 2025);
 
-            action.Should().Throw<ResponseStatusException>();        
+            action.Should().Throw<ResponseStatusException>();
         }
 
         [Fact(Skip = "Cannot test FromSqlRaw with InMemory database")]
