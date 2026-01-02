@@ -17,12 +17,12 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore
-        run: dotnet restore csharp/rebisco-bugtracker.Api/rebisco-bugtracker.Api.sln
+        run: dotnet restore csharp/rebisco-bugtracker.Tests/rebisco-bugtracker.Tests.csproj
         
       - name: Build
-        run: dotnet build csharp/rebisco-bugtracker.Api/rebisco-bugtracker.Api.sln --no-restore
+        run: dotnet build csharp/rebisco-bugtracker.Tests/rebisco-bugtracker.Tests.csproj --no-restore
 
       - name: Test with coverage
-        run: dotnet test csharp/rebisco-bugtracker.Api/rebisco-bugtracker.Api.sln --no-build --collect:"XPlat Code Coverage"
+        run: dotnet test csharp/rebisco-bugtracker.Tests/rebisco-bugtracker.Tests.csproj --no-build --collect:"XPlat Code Coverage"
 
 
