@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: dotnet build csharp/rebisco-bugtracker.Tests/rebisco-bugtracker.Tests.csproj --no-restore
 
-      - name: Test with coverage
+      - name: Test
         run: dotnet test csharp/rebisco-bugtracker.Tests/rebisco-bugtracker.Tests.csproj --no-build --collect:"XPlat Code Coverage"
 
 
