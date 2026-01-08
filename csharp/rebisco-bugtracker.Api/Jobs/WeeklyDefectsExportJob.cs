@@ -6,12 +6,12 @@ using System.Text;
 public class WeeklyDefectsExportJob : IJob
 {
     private readonly BugTrackerContext _context;
-    private readonly IFileStorageGateway _gateway;
+    private readonly IEmailSender _emailSender;
 
-    public WeeklyDefectsExportJob(BugTrackerContext db, IFileStorageGateway gateway)
+    public WeeklyDefectsExportJob(BugTrackerContext db, IEmailSender emailSender)
     {
         _context = db;
-        _gateway = gateway;
+        _emailSender = emailSender;
     }
 
     public async Task Execute(IJobExecutionContext context)
@@ -30,11 +30,11 @@ public class WeeklyDefectsExportJob : IJob
         }
 
         // 2️⃣ Export to CSV file
-        var fileName = $"DefectsExport_{DateTime.Now:yyyyMMdd}.csv";
-        var projectRoot = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.Parent!.Parent!.FullName;
-        var exportDir = Path.Combine(projectRoot, "Exports");
-        Directory.CreateDirectory(exportDir);
-        var filePath = Path.Combine(exportDir, fileName);
+         var fileName = $"DefectsExport_{DateTime.Now:yyyyMMdd}.csv";
+        // var projectRoot = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.Parent!.Parent!.FullName;
+        // var exportDir = Path.Combine(projectRoot, "Exports");
+        // Directory.CreateDirectory(exportDir);
+        // var filePath = Path.Combine(exportDir, fileName);
 
         var lines = new List<string> { "Id,Description,Priority,RaisedByTeam,Responsible,CreatedDate,UpdatedDate" };
 
@@ -53,8 +53,13 @@ public class WeeklyDefectsExportJob : IJob
                 ContentType = "text/csv"
             };
 
-        await File.WriteAllLinesAsync(filePath, lines);
-        await _gateway.UploadAsync(new List<IFormFile> { csvFile }, defectId: 1);
+        //await File.WriteAllLinesAsync(filePath, lines);
+        await _emailSender.SendEmailAsync(
+            to: "anita.chaudhary@westernacher.com",
+            subject: "Weekly Defects Report",
+            body: "<p>Please find attached the latest defects report.</p>",
+            attachments: new[] { (fileName, bytes) }
+        );
         Console.WriteLine("Weekly Defects Export Job COMPLETED.");
     }
 
