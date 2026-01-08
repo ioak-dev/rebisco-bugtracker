@@ -1,0 +1,39 @@
+services:
+  csharp-api:
+    build:
+      context: .              
+      dockerfile: Dockerfile
+    container_name: rebisco-bugtracker
+    ports:
+      - "5032:5032"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5032 
+      ConnectionStrings__DefaultConnection: "server=mysql;port=3306;user=root;password=root;database=bugtracker"
+      Auth0__Domain: dev-l44w7ox53tffwwle.us.auth0.com
+      Auth0__Audience: https://csharp.demo.com
+      FileStorage__Mode: DB
+      AWS__AccessKey: ""
+      AWS__SecretKey: ""
+      AWS__Region: "us-east-1"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bugtracker
+    volumes:
+      - mysql-rebisco-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+
+volumes:
+  mysql-rebisco-data:

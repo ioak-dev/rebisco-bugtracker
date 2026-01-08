@@ -68,9 +68,12 @@ namespace rebisco_bugtracker.Api
             // UI storage
             builder.Services.AddHealthChecksUI(options =>
             {
-                options.AddHealthCheckEndpoint("API Health", "/health");
-                options.SetEvaluationTimeInSeconds(50 * 60);
+                options.AddHealthCheckEndpoint(
+                    "API Health",
+                    builder.Configuration["HealthChecks:Endpoint"]);
+                    options.SetEvaluationTimeInSeconds(50 * 60);
             }).AddInMemoryStorage();
+
             ExcelPackage.License.SetNonCommercialPersonal("Test");
             var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
             var audience = builder.Configuration["Auth0:Audience"];
