@@ -5,8 +5,8 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy projects
-COPY rebisco-bugtracker.Api/ ./rebisco-bugtracker.Api/
-COPY rebisco-bugtracker.Tests/ ./rebisco-bugtracker.Tests/
+COPY csharp/rebisco-bugtracker.Api/ ./rebisco-bugtracker.Api/
+COPY csharp/rebisco-bugtracker.Tests/ ./rebisco-bugtracker.Tests/
 
 # Restore API
 WORKDIR /src/rebisco-bugtracker.Api
