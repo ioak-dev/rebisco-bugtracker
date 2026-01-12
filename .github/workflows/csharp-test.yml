@@ -29,7 +29,4 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
-        run: |
-        docker build \
-          -t rebisco-bugtracker-api:latest \
-          -f Dockerfile \
+        run: docker build -t rebisco-bugtracker-api:latest -f Dockerfile .
